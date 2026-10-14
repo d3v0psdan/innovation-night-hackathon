@@ -29,7 +29,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property array<string, string>|null $onboarding
  * @property Carbon|null $onboarded_at
  */
-#[Fillable(['name', 'email', 'password', 'onboarding'])]
+#[Fillable(['name', 'email', 'password', 'onboarding', 'tutorial_done'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
@@ -48,6 +48,8 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'password' => 'hashed',
             'onboarding' => 'array',
             'onboarded_at' => 'datetime',
+            'tutorial_done' => 'array',
+            'tutorial_completed_at' => 'datetime',
             'two_factor_confirmed_at' => 'datetime',
         ];
     }

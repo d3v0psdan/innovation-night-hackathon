@@ -1,11 +1,14 @@
 import { logout } from '@/routes';
 import { show } from '@/routes/onboarding';
-import { Head, Link } from '@inertiajs/react';
+import { done as markDone } from '@/routes/tutorial';
+import { Head, Link, useForm } from '@inertiajs/react';
 import {
     ArrowCounterClockwise,
-    ArrowRight,
     ArrowSquareOut,
     ChartBar,
+    CheckCircle,
+    Circle,
+    CircleNotch,
     Compass,
     FileText,
     Lightning,
@@ -13,6 +16,7 @@ import {
     SignOut,
     UsersThree,
 } from '@phosphor-icons/react';
+import { FormEvent } from 'react';
 
 const icons = {
     ChartBar,
@@ -25,38 +29,58 @@ const icons = {
 type IconName = keyof typeof icons;
 
 type Props = {
+    route: string;
     title: string;
     because: string;
     blurb: string;
     first_action: string;
     icon: IconName;
     href: string;
-    position: number | null;
-    count: number;
-    nextUp: { title: string; icon: IconName; url: string }[];
+    done: boolean;
+    allDone: boolean;
+    checklist: {
+        title: string;
+        icon: IconName;
+        url: string;
+        done: boolean;
+        current: boolean;
+    }[];
 };
 
-export default function Destination({
+export default function Destination(props: Props) {
+    return <DestinationPage key={props.route} {...props} />;
+}
+
+function DestinationPage({
+    route,
     title,
     because,
     blurb,
     first_action,
     icon,
     href,
-    position,
-    count,
-    nextUp,
+    done,
+    allDone,
+    checklist,
 }: Props) {
     const Icon = icons[icon] ?? Compass;
+    const form = useForm({});
+    const position = checklist.findIndex((item) => item.current) + 1;
+    const submitDone = (e: FormEvent) => {
+        e.preventDefault();
+        form.post(markDone.url(route));
+    };
 
     return (
         <main className="min-h-screen bg-sm-canvas px-4 py-10 font-sm-body">
             <Head title={title} />
             <div className="mx-auto max-w-xl rounded-2xl border border-sm-meta bg-sm-card p-8 shadow-sm">
                 <p className="text-xs tracking-widest text-sm-primary uppercase">
-                    {position
-                        ? `Your tool ${position} of ${count}`
-                        : 'Your first tool'}
+                    {allDone
+                        ? 'All set'
+                        : position > 0
+                          ? `Your tool ${position} of ${checklist.length}`
+                          : 'Your first tool'}
                 </p>
                 <h1 className="mt-2 flex items-center gap-2 font-sm-display text-3xl text-sm-title">
                     <Icon weight="bold" aria-hidden="true" /> {title}
@@ -85,16 +109,29 @@ export default function Destination({
                         Open {title}{' '}
                         <ArrowSquareOut weight="bold" aria-hidden="true" />
                     </a>
-                    <Link
-                        href={show(1)}
-                        className="inline-flex items-center gap-2 py-3 text-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
-                    >
-                        <ArrowCounterClockwise
-                            weight="bold"
-                            aria-hidden="true"
-                        />{' '}
-                        Change my answers
-                    </Link>
+                    {route !== 'dashboard' && !done && (
+                        <form onSubmit={submitDone}>
+                            <button
+                                type="submit"
+                                disabled={form.processing}
+                                className="inline-flex items-center gap-2 rounded-full border border-sm-primary px-5 py-3 text-sm-primary hover:bg-sm-primary/5 focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60"
+                            >
+                                {form.processing ? (
+                                    <CircleNotch
+                                        weight="bold"
+                                        aria-hidden="true"
+                                        className="animate-spin"
+                                    />
+                                ) : (
+                                    <CheckCircle
+                                        weight="bold"
+                                        aria-hidden="true"
+                                    />
+                                )}
+                                Mark done
+                            </button>
+                        </form>
+                    )}
                     <Link
                         href={logout()}
                         as="button"
@@ -103,44 +140,78 @@ export default function Destination({
                         <SignOut weight="bold" aria-hidden="true" /> Sign out
                     </Link>
                 </div>
-                {nextUp.length > 0 && (
+                {checklist.length > 0 && (
                     <section
-                        aria-labelledby="next-up"
+                        aria-labelledby="your-tools"
                         className="mt-8 border-t border-sm-meta/40 pt-6"
                     >
                         <h2
-                            id="next-up"
+                            id="your-tools"
                             className="text-xs tracking-widest text-sm-primary uppercase"
                         >
-                            Next up
+                            Your tools, in order
                         </h2>
-                        <ul className="mt-3 grid gap-2">
-                            {nextUp.map((item) => {
-                                const NextIcon = icons[item.icon] ?? Compass;
+                        <ol className="mt-3 grid gap-2">
+                            {checklist.map((item) => {
+                                const ItemIcon = icons[item.icon] ?? Compass;
+                                const State = item.done ? CheckCircle : Circle;
                                 return (
                                     <li key={item.url}>
                                         <Link
                                             href={item.url}
-                                            className="flex items-center gap-3 rounded-2xl border border-sm-meta px-4 py-3 text-sm-body hover:border-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
+                                            aria-current={
+                                                item.current
+                                                    ? 'page'
+                                                    : undefined
+                                            }
+                                            className={
+                                                'flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm-body hover:border-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none ' +
+                                                (item.current
+                                                    ? 'border-sm-primary bg-sm-primary/5'
+                                                    : 'border-sm-meta')
+                                            }
                                         >
-                                            <NextIcon
+                                            <State
+                                                weight="bold"
+                                                aria-hidden="true"
+                                                className={
+                                                    item.done
+                                                        ? 'text-sm-primary'
+                                                        : 'text-sm-meta'
+                                                }
+                                            />
+                                            <ItemIcon
                                                 weight="bold"
                                                 aria-hidden="true"
                                                 className="text-sm-primary"
                                             />
                                             {item.title}
-                                            <ArrowRight
-                                                weight="bold"
-                                                aria-hidden="true"
-                                                className="ml-auto text-sm-meta"
-                                            />
+                                            <span className="ml-auto text-sm text-sm-body">
+                                                {item.done
+                                                    ? 'Done'
+                                                    : item.current
+                                                      ? 'Now'
+                                                      : 'Next'}
+                                            </span>
                                         </Link>
                                     </li>
                                 );
                             })}
-                        </ul>
+                        </ol>
                     </section>
                 )}
+                <p className="mt-6">
+                    <Link
+                        href={show(1)}
+                        className="inline-flex items-center gap-2 py-2 text-sm text-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
+                    >
+                        <ArrowCounterClockwise
+                            weight="bold"
+                            aria-hidden="true"
+                        />{' '}
+                        Change my answers
+                    </Link>
+                </p>
             </div>
         </main>
     );

@@ -21,8 +21,12 @@ it('walks a fresh founder through onboarding to the investment memo', function (
         ->assertPathIs('/dashboard/memo')
         ->assertSee('Investment memo')
         ->assertSee('Because you said "Raising feels overwhelming"')
-        ->assertSee('Next up')
+        ->assertSee('Your tool 1 of 2')
         ->assertSee('Investor directory')
+        ->click('Mark done')
+        ->assertPathIs('/entities')
+        ->assertSee('Your tool 2 of 2')
+        ->assertSee('Done')
         ->assertNoJavaScriptErrors()
         ->assertNoAccessibilityIssues();
 });

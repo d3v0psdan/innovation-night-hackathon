@@ -55,9 +55,9 @@ it('shows the landing tool with the other matches as next up', function () {
     $this->actingAs($user)->get(route('destination.memo'))
         ->assertInertia(fn ($page) => $page->component('destination')
             ->where('title', 'Investment memo')
-            ->where('position', 1)
-            ->where('count', 2)
-            ->where('nextUp.0.title', 'Investor directory'));
+            ->where('checklist.0.current', true)
+            ->where('checklist.1.title', 'Investor directory')
+            ->where('checklist.1.done', false));
 });
 
 it('routes to the destination after the last step', function () {

@@ -22,6 +22,12 @@ class DemoSeeder extends Seeder
             User::factory()->create(['name' => $name, 'email' => $email, 'onboarding' => $answers, 'onboarded_at' => now()]);
         }
 
+        // Finished every recommended tool, lands on the dashboard checklist
+        User::factory()->create(['name' => 'Omar Haddad', 'email' => 'omar@demo.test', 'onboarding' => ['journey_stage' => 'early_traction', 'goal' => ['raise_funding', 'find_funding'], 'team_size' => '2_5'], 'onboarded_at' => now()->subDays(5), 'tutorial_done' => ['destination.memo', 'destination.investors'], 'tutorial_completed_at' => now()->subDays(4)]);
+
+        // Onboarded three days ago and never opened a tool: the re-engagement email target
+        User::factory()->create(['name' => 'Lena Fischer', 'email' => 'stalled@demo.test', 'onboarding' => ['journey_stage' => 'building_mvp', 'goal' => ['execution_focus', 'win_customers'], 'team_size' => 'solo'], 'onboarded_at' => now()->subDays(3)]);
+
         User::factory()->create(['name' => 'Fresh Founder', 'email' => 'fresh@demo.test']);
     }
 }

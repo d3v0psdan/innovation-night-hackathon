@@ -10,34 +10,70 @@ use Inertia\Response;
 
 class DestinationController extends Controller
 {
-    /** The dashboard sends an onboarded founder to their landing tool. No signal means the dashboard itself. */
+    /** The dashboard sends a founder to the next tool they have not done yet. Nothing left means the dashboard itself. */
     public function dashboard(Request $request, OnboardingRouter $router): Response|RedirectResponse
     {
-        $route = $router->destinationFor($request->user());
+        $next = $this->nextUndone($request, $router);
 
-        return $route === 'dashboard' ? $this->show($request, $router, 'dashboard') : redirect()->route($route);
+        return $next === null ? $this->show($request, $router, 'dashboard') : redirect()->route($next);
     }
 
-    /** One tutorial step: why you are here, what the tool does, the first action, and what comes next. */
+    /** One tutorial step: why you are here, what the tool does, the first action, and the checklist of every recommended tool. */
     public function show(Request $request, OnboardingRouter $router, string $route): Response
     {
         $destinations = $this->destinations();
         $user = $request->user();
+        $done = $user->tutorial_done ?? [];
         $recommended = $router->recommendationsFor($user);
 
-        $nextUp = array_values(array_map(
-            fn (string $next) => ['title' => $destinations[$next]['title'], 'icon' => $destinations[$next]['icon'], 'url' => route($next, [], false)],
-            array_values(array_filter($recommended, fn (string $next) => $next !== $route)),
-        ));
+        $checklist = array_map(fn (string $name) => [
+            'title' => $destinations[$name]['title'],
+            'icon' => $destinations[$name]['icon'],
+            'url' => route($name, [], false),
+            'done' => in_array($name, $done, true),
+            'current' => $name === $route,
+        ], $recommended);
 
         return Inertia::render('destination', [
             ...$destinations[$route],
+            'route' => $route,
             'href' => 'https://scaleupmap.com'.$destinations[$route]['path'],
             'because' => $router->reasonFor($user, $route),
-            'position' => array_search($route, $recommended, true) === false ? null : array_search($route, $recommended, true) + 1,
-            'count' => count($recommended),
-            'nextUp' => $nextUp,
+            'done' => in_array($route, $done, true),
+            'allDone' => $user->tutorial_completed_at !== null,
+            'checklist' => $checklist,
         ]);
+    }
+
+    /** Marks the tool done and moves the founder on to the next recommended tool, or the dashboard when none is left. */
+    public function done(Request $request, OnboardingRouter $router, string $route): RedirectResponse
+    {
+        abort_unless(array_key_exists($route, $this->destinations()), 404);
+
+        $user = $request->user();
+        $user->tutorial_done = array_values(array_unique([...($user->tutorial_done ?? []), $route]));
+
+        $next = $this->nextUndone($request, $router);
+        if ($next === null) {
+            $user->tutorial_completed_at ??= now();
+        }
+        $user->save();
+
+        return redirect()->route($next ?? 'dashboard');
+    }
+
+    private function nextUndone(Request $request, OnboardingRouter $router): ?string
+    {
+        $user = $request->user();
+        $done = $user->tutorial_done ?? [];
+
+        foreach ($router->recommendationsFor($user) as $route) {
+            if (! in_array($route, $done, true)) {
+                return $route;
+            }
+        }
+
+        return null;
     }
 
     /** @return array<string, array{path: string, title: string, icon: string, blurb: string, first_action: string}> */

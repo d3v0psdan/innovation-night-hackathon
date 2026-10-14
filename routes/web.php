@@ -14,6 +14,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // Destination stubs mirror the real ScaleupMap paths. Each is one tutorial step with the reason the founder landed there.
 Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
     Route::get('dashboard', [DestinationController::class, 'dashboard'])->name('dashboard');
+    Route::post('tutorial/{route}/done', [DestinationController::class, 'done'])->name('tutorial.done');
 
     foreach (require app_path('Onboarding/destinations.php') as $name => $destination) {
         if ($name !== 'dashboard') {
