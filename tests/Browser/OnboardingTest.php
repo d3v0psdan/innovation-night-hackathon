@@ -20,7 +20,7 @@ it('walks a fresh founder through onboarding to the investment memo', function (
         ->click('2 to 5 people')->click('Continue')
         ->assertPathIs('/dashboard/memo')
         ->assertSee('Investment memo')
-        ->assertSee('Because you said raising feels overwhelming')
+        ->assertSee('Because you said "Raising feels overwhelming"')
         ->assertNoJavaScriptErrors()
         ->assertNoAccessibilityIssues();
 });
@@ -31,9 +31,9 @@ it('lands each seeded founder on a different first tool', function (string $emai
 
     visit($path)->assertPathIs($path)->assertSee('Because you said');
 })->with([
-    ['maya@demo.test', '/dashboard/memo'],
-    ['sam@demo.test', '/coach'],
-    ['priya@demo.test', '/dashboard/score'],
-    ['jonas@demo.test', '/entities'],
-    ['aisha@demo.test', '/coach/north-star-sprint'],
+    'maya raise_funding lands on the memo' => ['maya@demo.test', '/dashboard/memo'],
+    'sam validate_direction lands on the journey map' => ['sam@demo.test', '/coach'],
+    'priya investor_blind_spots lands on the score' => ['priya@demo.test', '/dashboard/score'],
+    'jonas find_funding lands on the investor directory' => ['jonas@demo.test', '/entities'],
+    'aisha pivoting lands on the journey map' => ['aisha@demo.test', '/coach'],
 ]);

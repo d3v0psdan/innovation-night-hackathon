@@ -1,16 +1,16 @@
 /* ScaleupMap brand tokens. Source: brand/scaleupmap-platform-reference.md
    Use as Tailwind utilities: bg-sm-primary, text-sm-title, font-sm-display, border-sm-primary/12 */
 @theme {
-  --color-sm-primary: #3160ae;
-  --color-sm-primary-hover: #254a8f;
-  --color-sm-accent: #4fbbea;
-  --color-sm-title: #1a365d;
-  --color-sm-headline: #1a2744;
-  --color-sm-body: #475569;
-  --color-sm-meta: #64748b;
-  --color-sm-canvas: #f1f5f9;
-  --color-sm-landing: #fafbfd;
-  --color-sm-card: #ffffff;
-  --font-sm-body: 'DM Sans', system-ui, sans-serif;
-  --font-sm-display: 'DM Serif Display', Georgia, serif;
+    --color-sm-primary: #3160ae;
+    --color-sm-primary-hover: #254a8f;
+    --color-sm-accent: #4fbbea;
+    --color-sm-title: #1a365d;
+    --color-sm-headline: #1a2744;
+    --color-sm-body: #475569;
+    --color-sm-meta: #64748b;
+    --color-sm-canvas: #f1f5f9;
+    --color-sm-landing: #fafbfd;
+    --color-sm-card: #ffffff;
+    --font-sm-body: 'DM Sans', system-ui, sans-serif;
+    --font-sm-display: 'DM Serif Display', Georgia, serif;
 }

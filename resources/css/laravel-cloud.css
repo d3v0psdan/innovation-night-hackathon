@@ -114,7 +114,9 @@
     --chart-3: #ffc53d;
     --chart-4: #e54666;
     --chart-5: #8b8d98;
-    --sidebar: var(--background); /* part of the window chrome, like the header */
+    --sidebar: var(
+        --background
+    ); /* part of the window chrome, like the header */
     --sidebar-foreground: #1c2024;
     --sidebar-primary: #111113;
     --sidebar-primary-foreground: #ffffff;
@@ -124,13 +126,18 @@
     --sidebar-ring: #71a8ff;
 
     --shadow-xs: 0 0 1px 0 #00000008, 0 1px 2px 0 #0000000f;
-    --shadow-card: 0 0 0 1px #00000022, 0 0 1px 0 #00000008, 0 1px 2px 0 #0000000f;
-    --shadow-button: 0 0 0 1px #1a1a1a29, 0 0 1px 0 #0000000f, 0 1px 2px 0 #0000001f;
-    --shadow-brand: 0 0 0 1px #005cec, 0 1px 3px 0 #0000001a, 0 1px 2px 0 #0000000f;
-    --shadow-popover: 0 0 0 1px #01213929, 0 20px 8px 0 #00000003, 0 11px 7px 0 #0000000d,
+    --shadow-card:
+        0 0 0 1px #00000022, 0 0 1px 0 #00000008, 0 1px 2px 0 #0000000f;
+    --shadow-button:
+        0 0 0 1px #1a1a1a29, 0 0 1px 0 #0000000f, 0 1px 2px 0 #0000001f;
+    --shadow-brand:
+        0 0 0 1px #005cec, 0 1px 3px 0 #0000001a, 0 1px 2px 0 #0000000f;
+    --shadow-popover:
+        0 0 0 1px #01213929, 0 20px 8px 0 #00000003, 0 11px 7px 0 #0000000d,
         0 5px 5px 0 #00000017, 0 1px 3px 0 #0000001a;
     /* the dialog's double bezel: hairline, a frosted 6px band, a faint edge */
-    --shadow-dialog: 0 0 0 1px #00000024, 0 0 0 7px #ffffff8c, 0 0 0 8px #0000000f,
+    --shadow-dialog:
+        0 0 0 1px #00000024, 0 0 0 7px #ffffff8c, 0 0 0 8px #0000000f,
         0 24px 48px -12px #00000029;
 }
 
@@ -183,12 +190,17 @@
     --sidebar-ring: #225ec3;
 
     --shadow-xs: 0 0 1px 0 #00000040, 0 1px 2px 0 #0000004d;
-    --shadow-card: 0 0 0 1px #d9edff1f, 0 0 1px 0 #00000040, 0 1px 2px 0 #0000004d;
-    --shadow-button: 0 0 0 1px #d9edff29, 0 0 1px 0 #00000040, 0 1px 2px 0 #00000066;
-    --shadow-brand: 0 0 0 1px #2878ffbf, 0 1px 3px 0 #0000004d, 0 1px 2px 0 #00000040;
-    --shadow-popover: 0 0 0 1px #d9edff29, 0 11px 7px 0 #0000004d, 0 5px 5px 0 #00000066,
+    --shadow-card:
+        0 0 0 1px #d9edff1f, 0 0 1px 0 #00000040, 0 1px 2px 0 #0000004d;
+    --shadow-button:
+        0 0 0 1px #d9edff29, 0 0 1px 0 #00000040, 0 1px 2px 0 #00000066;
+    --shadow-brand:
+        0 0 0 1px #2878ffbf, 0 1px 3px 0 #0000004d, 0 1px 2px 0 #00000040;
+    --shadow-popover:
+        0 0 0 1px #d9edff29, 0 11px 7px 0 #0000004d, 0 5px 5px 0 #00000066,
         0 1px 3px 0 #00000080;
-    --shadow-dialog: 0 0 0 1px #d9edff29, 0 0 0 7px #ffffff0f, 0 0 0 8px #0000004d,
+    --shadow-dialog:
+        0 0 0 1px #d9edff29, 0 0 0 7px #ffffff0f, 0 0 0 8px #0000004d,
         0 24px 48px -12px #00000099;
 }
 
@@ -198,7 +210,13 @@
     }
     html {
         @apply font-sans;
-        font-feature-settings: "cv01" 1, "cv02" 1, "cv03" 1, "cv04" 1, "cv11" 1, "calt" 0;
+        font-feature-settings:
+            'cv01' 1,
+            'cv02' 1,
+            'cv03' 1,
+            'cv04' 1,
+            'cv11' 1,
+            'calt' 0;
         color-scheme: light;
     }
     html.dark {
@@ -215,7 +233,11 @@
 
 @utility bg-dot-grid {
     background-color: var(--well);
-    background-image: radial-gradient(circle, var(--grid-dot) 1px, transparent 1.2px);
+    background-image: radial-gradient(
+        circle,
+        var(--grid-dot) 1px,
+        transparent 1.2px
+    );
     background-size: 18px 18px;
     background-position: 9px 9px;
 }
@@ -223,5 +245,9 @@
 /* A faint brand wash from the top-right corner, like the tinted corners on
    laravel.com's feature blocks. Decorative: it sits under the content. */
 @utility bg-brand-glow {
-    background-image: radial-gradient(70% 140% at 100% 0%, color-mix(in oklab, var(--brand) 9%, transparent), transparent 70%);
+    background-image: radial-gradient(
+        70% 140% at 100% 0%,
+        color-mix(in oklab, var(--brand) 9%, transparent),
+        transparent 70%
+    );
 }

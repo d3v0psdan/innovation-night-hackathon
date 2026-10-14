@@ -1,13 +1,15 @@
-import { Label } from "@/components/ui/label";
-import { Radio, RadioGroup } from "@/components/ui/radio-group";
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Label } from '@/components/ui/label';
+import { Radio, RadioGroup } from '@/components/ui/radio-group';
+import { logout } from '@/routes';
+import { show, store } from '@/routes/onboarding';
+import { Head, Link, useForm } from '@inertiajs/react';
 import {
     ArrowLeft,
     ArrowRight,
     CircleNotch,
     SignOut,
-} from "@phosphor-icons/react";
-import { FormEvent } from "react";
+} from '@phosphor-icons/react';
+import { FormEvent } from 'react';
 
 type Question = { key: string; label: string; options: Record<string, string> };
 type Props = {
@@ -21,35 +23,45 @@ export default function Step({ step, total, question, answer }: Props) {
     const form = useForm({ answer });
     const submit = (e: FormEvent) => {
         e.preventDefault();
-        form.post("/onboarding/" + step);
+        form.post(store.url(step));
     };
 
     return (
         <main className="min-h-screen bg-sm-canvas px-4 py-10 font-sm-body">
-            <Head title={"Step " + step + " of " + total} />
+            <Head title={question.label} />
             <form
                 onSubmit={submit}
-                className="mx-auto max-w-xl rounded-2xl border border-sm-primary/40 bg-sm-card p-8 shadow-sm"
+                className="mx-auto max-w-xl rounded-2xl border border-sm-meta bg-sm-card p-8 shadow-sm"
             >
-                <p className="text-xs tracking-widest text-sm-primary uppercase">
+                {step > 1 && (
+                    <Link
+                        href={show(step - 1)}
+                        className="inline-flex items-center gap-1 text-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
+                    >
+                        <ArrowLeft weight="bold" aria-hidden="true" /> Back
+                    </Link>
+                )}
+                <p className="mt-4 text-xs tracking-widest text-sm-primary uppercase">
                     Step {step} of {total}
                 </p>
                 <div
                     role="progressbar"
                     aria-label="Onboarding progress"
-                    aria-valuemin={1}
+                    aria-valuemin={0}
                     aria-valuemax={total}
-                    aria-valuenow={step}
+                    aria-valuenow={step - 1}
                     className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-sm-primary/12"
                 >
                     <div
                         className="h-full rounded-full bg-sm-primary"
-                        style={{ width: (step / total) * 100 + "%" }}
+                        style={{ width: ((step - 1) / total) * 100 + '%' }}
                     />
                 </div>
                 <fieldset className="mt-4">
-                    <legend className="font-sm-display text-3xl text-sm-title">
-                        {question.label}
+                    <legend>
+                        <h1 className="font-sm-display text-3xl text-sm-title">
+                            {question.label}
+                        </h1>
                     </legend>
                     {step === 1 && (
                         <p className="mt-2 text-sm-meta">
@@ -60,7 +72,7 @@ export default function Step({ step, total, question, answer }: Props) {
                     <RadioGroup
                         value={form.data.answer}
                         onValueChange={(value) =>
-                            form.setData("answer", String(value))
+                            form.setData('answer', String(value))
                         }
                         className="mt-6 grid gap-3"
                     >
@@ -68,11 +80,11 @@ export default function Step({ step, total, question, answer }: Props) {
                             ([value, label]) => (
                                 <Label
                                     key={value}
-                                    className="flex cursor-pointer items-center gap-3 rounded-2xl border border-sm-primary/40 px-4 py-3 text-base text-sm-body has-data-checked:border-sm-primary has-data-checked:bg-sm-primary/5 has-focus-visible:ring-2 has-focus-visible:ring-sm-primary"
+                                    className="flex cursor-pointer items-center gap-3 rounded-2xl border border-sm-meta px-4 py-3 text-base text-sm-body has-focus-visible:ring-2 has-focus-visible:ring-sm-primary has-data-checked:border-sm-primary has-data-checked:bg-sm-primary/5"
                                 >
                                     <Radio
                                         value={value}
-                                        className="border-sm-primary/60"
+                                        className="border-sm-primary"
                                     />
                                     {label}
                                 </Label>
@@ -86,18 +98,18 @@ export default function Step({ step, total, question, answer }: Props) {
                     </p>
                 )}
                 <p id="continue-hint" className="mt-6 text-sm text-sm-meta">
-                    {form.data.answer === ""
-                        ? "Pick one to continue."
-                        : "You can change this later."}
+                    {form.data.answer === ''
+                        ? 'Pick one to continue.'
+                        : 'You can change this later.'}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-4">
                     <button
                         type="submit"
                         aria-describedby="continue-hint"
-                        disabled={form.processing || form.data.answer === ""}
+                        disabled={form.processing}
                         className="inline-flex items-center gap-2 rounded-full bg-sm-primary px-6 py-3 text-white hover:bg-sm-primary-hover focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60"
                     >
-                        {form.processing ? "Saving" : "Continue"}
+                        {form.processing ? 'Saving' : 'Continue'}
                         {form.processing ? (
                             <CircleNotch
                                 weight="bold"
@@ -108,17 +120,8 @@ export default function Step({ step, total, question, answer }: Props) {
                             <ArrowRight weight="bold" aria-hidden="true" />
                         )}
                     </button>
-                    {step > 1 && (
-                        <Link
-                            href={"/onboarding/" + (step - 1)}
-                            className="inline-flex items-center gap-1 py-3 text-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
-                        >
-                            <ArrowLeft weight="bold" aria-hidden="true" /> Back
-                        </Link>
-                    )}
                     <Link
-                        href="/logout"
-                        method="post"
+                        href={logout()}
                         as="button"
                         className="ml-auto inline-flex items-center gap-1 py-3 text-sm-meta focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
                     >

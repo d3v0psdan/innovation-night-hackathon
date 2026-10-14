@@ -4,41 +4,63 @@ use App\Models\User;
 
 it('sends a new user to step 1', function () {
     $this->actingAs(User::factory()->create())
-        ->get('/dashboard')
-        ->assertRedirect('/onboarding/1');
+        ->get(route('dashboard'))
+        ->assertRedirect(route('onboarding.show', 1));
 });
 
 it('saves an answer and moves to the next step', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)
-        ->post('/onboarding/1', ['answer' => 'building_mvp'])
-        ->assertRedirect('/onboarding/2');
+        ->post(route('onboarding.store', 1), ['answer' => 'building_mvp'])
+        ->assertRedirect(route('onboarding.show', 2));
 
     expect($user->fresh()->onboarding)->toBe(['journey_stage' => 'building_mvp']);
 });
 
-it('rejects an answer that is not an option', function () {
-    $this->actingAs(User::factory()->create())
-        ->from('/onboarding/1')
-        ->post('/onboarding/1', ['answer' => 'hacked'])
-        ->assertRedirect('/onboarding/1')
-        ->assertSessionHasErrors('answer');
+it('rejects an answer that is not an option and saves nothing', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->from(route('onboarding.show', 1))
+        ->post(route('onboarding.store', 1), ['answer' => 'hacked'])
+        ->assertRedirect(route('onboarding.show', 1))
+        ->assertSessionHasErrors(['answer' => 'The selected answer is invalid.']);
+
+    expect($user->fresh()->onboarding)->toBeNull()
+        ->and($user->fresh()->onboarded_at)->toBeNull();
 });
 
 it('routes to the destination after the last step', function () {
     $user = User::factory()->create(['onboarding' => ['journey_stage' => 'early_traction', 'goal' => 'raise_funding']]);
 
     $this->actingAs($user)
-        ->post('/onboarding/3', ['answer' => 'solo'])
-        ->assertRedirect('/dashboard/memo');
+        ->post(route('onboarding.store', 3), ['answer' => 'solo'])
+        ->assertRedirect(route('destination.memo'));
 
-    $this->actingAs($user->fresh())->get('/dashboard/memo')->assertOk();
+    $this->actingAs($user->fresh())->get(route('destination.memo'))->assertOk();
     expect($user->fresh()->onboarded_at)->not->toBeNull();
+});
+
+it('sends an onboarded user from the dashboard to their first tool', function () {
+    $user = User::factory()->create(['onboarding' => ['goal' => 'find_funding'], 'onboarded_at' => now()]);
+
+    $this->actingAs($user)->get(route('dashboard'))->assertRedirect(route('destination.investors'));
 });
 
 it('sends a user who skips ahead back to the first unanswered step', function () {
     $this->actingAs(User::factory()->create())
-        ->post('/onboarding/3', ['answer' => 'solo'])
-        ->assertRedirect('/onboarding/1');
+        ->post(route('onboarding.store', 3), ['answer' => 'solo'])
+        ->assertRedirect(route('onboarding.show', 1));
+});
+
+it('lets a new registration reach onboarding without email verification', function () {
+    $this->post('/register', [
+        'name' => 'Live Demo',
+        'email' => 'live@demo.test',
+        'password' => 'password',
+        'password_confirmation' => 'password',
+    ])->assertRedirect(route('dashboard'));
+
+    $this->get(route('dashboard'))->assertRedirect(route('onboarding.show', 1));
 });

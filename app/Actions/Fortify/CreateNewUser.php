@@ -24,12 +24,15 @@ class CreateNewUser implements CreatesNewUsers
             'password' => $this->passwordRules(),
         ])->validate();
 
-        // Demo accounts registered live skip email verification. The link would only land in laravel.log.
-        return User::forceCreate([
-            'email_verified_at' => now(),
+        $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => $input['password'],
         ]);
+
+        // Accounts registered live in the demo skip email verification. The link would only land in laravel.log.
+        $user->markEmailAsVerified();
+
+        return $user;
     }
 }
