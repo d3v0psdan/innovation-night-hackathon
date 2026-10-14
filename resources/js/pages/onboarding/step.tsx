@@ -57,7 +57,7 @@ export default function Step({
                     </RadioGroup>
                 </fieldset>
                 {form.errors.answer && (
-                    <p role="alert" className="mt-3 text-sm text-red-600">
+                    <p role="alert" className="mt-3 text-sm text-destructive">
                         {form.errors.answer}
                     </p>
                 )}
