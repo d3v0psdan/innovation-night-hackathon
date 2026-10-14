@@ -7,7 +7,7 @@
 - UI components come from Origin UI, installed through the shadcn CLI
 - Icons are Phosphor only (`@phosphor-icons/react`), always `weight="bold"`. Never lucide
 - Styling uses tokens from `resources/css/laravel-cloud.css` and `resources/css/scaleupmap.css` (`sm-` utilities). Read them before styling anything. No hardcoded hex
-- Sponsor facts, real onboarding answer keys and the goal to destination table come from `/scaleupmap`
+- If the challenge is from ScaleupMap, sponsor facts, real onboarding answer keys and the goal to destination table come from `/scaleupmap`. If the sponsor is someone else, skip `/scaleupmap`, keep the plumbing in `app/Onboarding/`, and replace `questions.php`, the router rules and the destination stubs with the real sponsor's
 
 ## Commands
 - Dev server `composer run dev`
@@ -18,7 +18,7 @@
 ## How we work tonight
 - 3 hours total. Smallest thing that works, then polish
 - Always start with `/context`. When unsure what to do next, run it again
-- Follow the flow `/context` then `/scaleupmap` then `/plan-feature` then `/design-screen` then `/onboarding-step` and `/routing-rule` then `/write-tests` then `/demo-seed` then `/pitch-prep`
+- Follow the flow `/context` then `/scaleupmap` (ScaleupMap only) then `/plan-feature` then `/design-screen` then `/onboarding-step` and `/routing-rule` then `/write-tests` then `/demo-seed` then `/pitch-prep`
 - Every feature gets one Pest test. Every screen gets one browser test
 - Don't add packages without asking
 - Accessible by default. Labels on inputs, keyboard works, visible focus
