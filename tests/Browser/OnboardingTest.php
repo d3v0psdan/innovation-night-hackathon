@@ -15,12 +15,14 @@ it('walks a fresh founder through onboarding to the investment memo', function (
 
     $page->click('Raising a first round')->click('Continue')
         ->assertSee('Step 2 of 3')
-        ->click('Raising feels overwhelming')->click('Continue')
+        ->click('Raising feels overwhelming')->click('Finding investors and funding')->click('Continue')
         ->assertSee('Step 3 of 3')
         ->click('2 to 5 people')->click('Continue')
         ->assertPathIs('/dashboard/memo')
         ->assertSee('Investment memo')
         ->assertSee('Because you said "Raising feels overwhelming"')
+        ->assertSee('Next up')
+        ->assertSee('Investor directory')
         ->assertNoJavaScriptErrors()
         ->assertNoAccessibilityIssues();
 });

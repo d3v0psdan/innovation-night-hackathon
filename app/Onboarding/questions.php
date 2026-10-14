@@ -1,6 +1,7 @@
 <?php
 
 // Every onboarding question lives here. Keys and option values are the real ScaleupMap ones.
+// 'multiple' => true makes the step a checkbox list and stores an array of keys.
 return [
     [
         'key' => 'journey_stage',
@@ -16,7 +17,8 @@ return [
     ],
     [
         'key' => 'goal',
-        'label' => 'What do you most need help with this month?',
+        'label' => 'What do you need help with this month?',
+        'multiple' => true,
         'options' => [
             'validate_direction' => 'I am unsure about direction',
             'win_customers' => 'Traction and customers',

@@ -31,8 +31,37 @@ it('rejects an answer that is not an option and saves nothing', function () {
         ->and($user->fresh()->onboarded_at)->toBeNull();
 });
 
+it('saves several goals on the multi pick step', function () {
+    $user = User::factory()->create(['onboarding' => ['journey_stage' => 'early_traction']]);
+
+    $this->actingAs($user)
+        ->post(route('onboarding.store', 2), ['answer' => ['raise_funding', 'find_funding']])
+        ->assertRedirect(route('onboarding.show', 3));
+
+    expect($user->fresh()->onboarding['goal'])->toBe(['raise_funding', 'find_funding']);
+});
+
+it('rejects an empty or unknown goal list', function () {
+    $user = User::factory()->create(['onboarding' => ['journey_stage' => 'early_traction']]);
+
+    $this->actingAs($user)->post(route('onboarding.store', 2), ['answer' => []])->assertSessionHasErrors('answer');
+    $this->actingAs($user)->post(route('onboarding.store', 2), ['answer' => ['hacked']])->assertSessionHasErrors('answer.0');
+    expect($user->fresh()->onboarding)->not->toHaveKey('goal');
+});
+
+it('shows the landing tool with the other matches as next up', function () {
+    $user = User::factory()->create(['onboarding' => ['journey_stage' => 'early_traction', 'goal' => ['raise_funding', 'find_funding']], 'onboarded_at' => now()]);
+
+    $this->actingAs($user)->get(route('destination.memo'))
+        ->assertInertia(fn ($page) => $page->component('destination')
+            ->where('title', 'Investment memo')
+            ->where('position', 1)
+            ->where('count', 2)
+            ->where('nextUp.0.title', 'Investor directory'));
+});
+
 it('routes to the destination after the last step', function () {
-    $user = User::factory()->create(['onboarding' => ['journey_stage' => 'early_traction', 'goal' => 'raise_funding']]);
+    $user = User::factory()->create(['onboarding' => ['journey_stage' => 'early_traction', 'goal' => ['raise_funding']]]);
 
     $this->actingAs($user)
         ->post(route('onboarding.store', 3), ['answer' => 'solo'])
@@ -43,7 +72,7 @@ it('routes to the destination after the last step', function () {
 });
 
 it('sends an onboarded user from the dashboard to their first tool', function () {
-    $user = User::factory()->create(['onboarding' => ['goal' => 'find_funding'], 'onboarded_at' => now()]);
+    $user = User::factory()->create(['onboarding' => ['goal' => ['find_funding']], 'onboarded_at' => now()]);
 
     $this->actingAs($user)->get(route('dashboard'))->assertRedirect(route('destination.investors'));
 });

@@ -20,11 +20,14 @@ class OnboardingController extends Controller
             return $redirect;
         }
 
+        $question = $questions[$step - 1];
+        $saved = $request->user()->onboarding[$question['key']] ?? null;
+
         return Inertia::render('onboarding/step', [
             'step' => $step,
             'total' => count($questions),
-            'question' => $questions[$step - 1],
-            'answer' => $request->user()->onboarding[$questions[$step - 1]['key']] ?? '',
+            'question' => $question + ['multiple' => false],
+            'answer' => ($question['multiple'] ?? false) ? (array) ($saved ?? []) : ($saved ?? ''),
         ]);
     }
 
@@ -36,10 +39,11 @@ class OnboardingController extends Controller
             return $redirect;
         }
         $question = $questions[$step - 1];
+        $option = Rule::in(array_keys($question['options']));
 
-        $validated = $request->validate([
-            'answer' => ['required', Rule::in(array_keys($question['options']))],
-        ]);
+        $validated = ($question['multiple'] ?? false)
+            ? $request->validate(['answer' => ['required', 'array', 'min:1'], 'answer.*' => ['string', $option]])
+            : $request->validate(['answer' => ['required', 'string', $option]]);
 
         $user = $request->user();
         $user->onboarding = [...($user->onboarding ?? []), $question['key'] => $validated['answer']];
@@ -70,6 +74,7 @@ class OnboardingController extends Controller
         return null;
     }
 
+    /** @return array<int, array{key: string, label: string, options: array<string, string>, multiple?: bool}> */
     private function questions(): array
     {
         return require app_path('Onboarding/questions.php');

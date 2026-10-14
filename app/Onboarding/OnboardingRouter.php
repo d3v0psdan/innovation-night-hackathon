@@ -7,55 +7,72 @@ use App\Models\User;
 class OnboardingRouter
 {
     /**
-     * Ordered rules. First match wins. The last rule has no match and is the fallback.
-     * Stage rules come first so a founder with no venture yet is sent to the map whatever their goal.
+     * Ordered rules. Every rule that matches is a recommended tool, in this order. The first is the landing tool.
+     * Stage rules come first so a founder with no venture yet is sent to the map whatever their goals.
      *
      * @var array<int, array{match: array<string, string>, route: string}>
      */
     private const RULES = [
         ['match' => ['journey_stage' => 'looking_for_idea'], 'route' => 'destination.map'],
         ['match' => ['journey_stage' => 'pivoting'], 'route' => 'destination.map'],
-        ['match' => ['goal' => 'find_funding'], 'route' => 'destination.investors'],
         ['match' => ['goal' => 'raise_funding'], 'route' => 'destination.memo'],
+        ['match' => ['goal' => 'find_funding'], 'route' => 'destination.investors'],
         ['match' => ['goal' => 'investor_blind_spots'], 'route' => 'destination.score'],
         ['match' => ['goal' => 'validate_direction'], 'route' => 'destination.map'],
         ['match' => ['goal' => 'execution_focus'], 'route' => 'destination.sprint'],
         ['match' => ['goal' => 'win_customers'], 'route' => 'destination.sprint'],
-        ['match' => [], 'route' => 'dashboard'],
     ];
+
+    private const FALLBACK = 'dashboard';
 
     public function destinationFor(User $user): string
     {
-        return $this->ruleFor($user)['route'];
+        return $this->recommendationsFor($user)[0] ?? self::FALLBACK;
     }
 
-    /** Quotes the option label the founder actually picked, so the reason never paraphrases. */
-    public function reasonFor(User $user): string
+    /** Route names of every tool the answers call for, landing tool first, no duplicates. */
+    public function recommendationsFor(User $user): array
     {
-        $match = $this->ruleFor($user)['match'];
+        $routes = [];
 
-        if ($match === []) {
-            return 'No strong signal yet, so we start you on the dashboard.';
+        foreach ($this->matchingRules($user) as $rule) {
+            $routes[$rule['route']] = true;
         }
 
-        $key = array_key_first($match);
-        $label = $this->optionLabel($key, $match[$key]);
-
-        return 'Because you said "'.$label.'".';
+        return array_keys($routes);
     }
 
-    /** @return array{match: array<string, string>, route: string} */
-    private function ruleFor(User $user): array
+    /** Quotes the option label the founder actually picked for the given tool, so the reason never paraphrases. */
+    public function reasonFor(User $user, ?string $route = null): string
     {
-        $answers = $user->onboarding ?? [];
+        $route ??= $this->destinationFor($user);
 
-        foreach (self::RULES as $rule) {
-            if (array_intersect_assoc($rule['match'], $answers) === $rule['match']) {
-                return $rule;
+        foreach ($this->matchingRules($user) as $rule) {
+            if ($rule['route'] === $route) {
+                $key = array_key_first($rule['match']);
+
+                return 'Because you said "'.$this->optionLabel($key, $rule['match'][$key]).'".';
             }
         }
 
-        return end(self::RULES);
+        return 'No strong signal yet, so we start you on the dashboard.';
+    }
+
+    /** @return array<int, array{match: array<string, string>, route: string}> */
+    private function matchingRules(User $user): array
+    {
+        $answers = $user->onboarding ?? [];
+
+        return array_values(array_filter(self::RULES, function (array $rule) use ($answers) {
+            foreach ($rule['match'] as $key => $value) {
+                $picked = (array) ($answers[$key] ?? []);
+                if (! in_array($value, $picked, true)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }));
     }
 
     private function optionLabel(string $key, string $value): string

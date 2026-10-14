@@ -1,3 +1,4 @@
+import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Radio, RadioGroup } from '@/components/ui/radio-group';
 import { logout } from '@/routes';
@@ -11,20 +12,41 @@ import {
 } from '@phosphor-icons/react';
 import { FormEvent } from 'react';
 
-type Question = { key: string; label: string; options: Record<string, string> };
+type Question = {
+    key: string;
+    label: string;
+    options: Record<string, string>;
+    multiple: boolean;
+};
 type Props = {
     step: number;
     total: number;
     question: Question;
-    answer: string;
+    answer: string | string[];
 };
 
-export default function Step({ step, total, question, answer }: Props) {
+const card =
+    'flex cursor-pointer items-center gap-3 rounded-2xl border border-sm-meta px-4 py-3 text-base text-sm-body has-data-checked:border-sm-primary has-data-checked:bg-sm-primary/5 has-data-[state=checked]:border-sm-primary has-data-[state=checked]:bg-sm-primary/5 has-focus-visible:ring-2 has-focus-visible:ring-sm-primary';
+
+// Inertia reuses this page component between steps, so the form is keyed by step or it keeps the previous answer.
+export default function Step(props: Props) {
+    return <StepForm key={props.step} {...props} />;
+}
+
+function StepForm({ step, total, question, answer }: Props) {
     const form = useForm({ answer });
+    const picked = Array.isArray(form.data.answer)
+        ? form.data.answer
+        : [form.data.answer].filter(Boolean);
     const submit = (e: FormEvent) => {
         e.preventDefault();
         form.post(store.url(step));
     };
+    const toggle = (value: string, checked: boolean) =>
+        form.setData(
+            'answer',
+            checked ? [...picked, value] : picked.filter((v) => v !== value),
+        );
 
     return (
         <main className="min-h-screen bg-sm-canvas px-4 py-10 font-sm-body">
@@ -69,28 +91,50 @@ export default function Step({ step, total, question, answer }: Props) {
                             tool.
                         </p>
                     )}
-                    <RadioGroup
-                        value={form.data.answer}
-                        onValueChange={(value) =>
-                            form.setData('answer', String(value))
-                        }
-                        className="mt-6 grid gap-3"
-                    >
-                        {Object.entries(question.options).map(
-                            ([value, label]) => (
-                                <Label
-                                    key={value}
-                                    className="flex cursor-pointer items-center gap-3 rounded-2xl border border-sm-meta px-4 py-3 text-base text-sm-body has-focus-visible:ring-2 has-focus-visible:ring-sm-primary has-data-checked:border-sm-primary has-data-checked:bg-sm-primary/5"
-                                >
-                                    <Radio
-                                        value={value}
-                                        className="border-sm-primary"
-                                    />
-                                    {label}
-                                </Label>
-                            ),
-                        )}
-                    </RadioGroup>
+                    {question.multiple && (
+                        <p className="mt-2 text-sm-meta">
+                            Pick everything that applies. We will line up a tool
+                            for each.
+                        </p>
+                    )}
+                    {question.multiple ? (
+                        <div className="mt-6 grid gap-3">
+                            {Object.entries(question.options).map(
+                                ([value, label]) => (
+                                    <Label key={value} className={card}>
+                                        <Checkbox
+                                            checked={picked.includes(value)}
+                                            onCheckedChange={(checked) =>
+                                                toggle(value, checked === true)
+                                            }
+                                            className="border-sm-primary"
+                                        />
+                                        {label}
+                                    </Label>
+                                ),
+                            )}
+                        </div>
+                    ) : (
+                        <RadioGroup
+                            value={picked[0] ?? ''}
+                            onValueChange={(value) =>
+                                form.setData('answer', String(value))
+                            }
+                            className="mt-6 grid gap-3"
+                        >
+                            {Object.entries(question.options).map(
+                                ([value, label]) => (
+                                    <Label key={value} className={card}>
+                                        <Radio
+                                            value={value}
+                                            className="border-sm-primary"
+                                        />
+                                        {label}
+                                    </Label>
+                                ),
+                            )}
+                        </RadioGroup>
+                    )}
                 </fieldset>
                 {form.errors.answer && (
                     <p role="alert" className="mt-3 text-sm text-destructive">
@@ -98,8 +142,10 @@ export default function Step({ step, total, question, answer }: Props) {
                     </p>
                 )}
                 <p id="continue-hint" className="mt-6 text-sm text-sm-meta">
-                    {form.data.answer === ''
-                        ? 'Pick one to continue.'
+                    {picked.length === 0
+                        ? question.multiple
+                            ? 'Pick at least one to continue.'
+                            : 'Pick one to continue.'
                         : 'You can change this later.'}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-4">

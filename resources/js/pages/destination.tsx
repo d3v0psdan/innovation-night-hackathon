@@ -3,6 +3,7 @@ import { show } from '@/routes/onboarding';
 import { Head, Link } from '@inertiajs/react';
 import {
     ArrowCounterClockwise,
+    ArrowRight,
     ArrowSquareOut,
     ChartBar,
     Compass,
@@ -21,21 +22,30 @@ const icons = {
     MapTrifold,
     UsersThree,
 };
+type IconName = keyof typeof icons;
 
 type Props = {
     title: string;
     because: string;
     blurb: string;
-    icon: keyof typeof icons;
+    first_action: string;
+    icon: IconName;
     href: string;
+    position: number | null;
+    count: number;
+    nextUp: { title: string; icon: IconName; url: string }[];
 };
 
 export default function Destination({
     title,
     because,
     blurb,
+    first_action,
     icon,
     href,
+    position,
+    count,
+    nextUp,
 }: Props) {
     const Icon = icons[icon] ?? Compass;
 
@@ -44,13 +54,27 @@ export default function Destination({
             <Head title={title} />
             <div className="mx-auto max-w-xl rounded-2xl border border-sm-meta bg-sm-card p-8 shadow-sm">
                 <p className="text-xs tracking-widest text-sm-primary uppercase">
-                    Your first tool
+                    {position
+                        ? `Your tool ${position} of ${count}`
+                        : 'Your first tool'}
                 </p>
                 <h1 className="mt-2 flex items-center gap-2 font-sm-display text-3xl text-sm-title">
                     <Icon weight="bold" aria-hidden="true" /> {title}
                 </h1>
                 <p className="mt-4 text-sm-body">{because}</p>
                 <p className="mt-2 text-sm-meta">{blurb}</p>
+                <section
+                    aria-labelledby="first-action"
+                    className="mt-6 rounded-2xl bg-sm-primary/5 p-4"
+                >
+                    <h2
+                        id="first-action"
+                        className="text-xs tracking-widest text-sm-primary uppercase"
+                    >
+                        Your first action
+                    </h2>
+                    <p className="mt-1 text-sm-body">{first_action}</p>
+                </section>
                 <div className="mt-8 flex flex-wrap items-center gap-4">
                     <a
                         href={href}
@@ -79,6 +103,44 @@ export default function Destination({
                         <SignOut weight="bold" aria-hidden="true" /> Sign out
                     </Link>
                 </div>
+                {nextUp.length > 0 && (
+                    <section
+                        aria-labelledby="next-up"
+                        className="mt-8 border-t border-sm-meta/40 pt-6"
+                    >
+                        <h2
+                            id="next-up"
+                            className="text-xs tracking-widest text-sm-primary uppercase"
+                        >
+                            Next up
+                        </h2>
+                        <ul className="mt-3 grid gap-2">
+                            {nextUp.map((item) => {
+                                const NextIcon = icons[item.icon] ?? Compass;
+                                return (
+                                    <li key={item.url}>
+                                        <Link
+                                            href={item.url}
+                                            className="flex items-center gap-3 rounded-2xl border border-sm-meta px-4 py-3 text-sm-body hover:border-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
+                                        >
+                                            <NextIcon
+                                                weight="bold"
+                                                aria-hidden="true"
+                                                className="text-sm-primary"
+                                            />
+                                            {item.title}
+                                            <ArrowRight
+                                                weight="bold"
+                                                aria-hidden="true"
+                                                className="ml-auto text-sm-meta"
+                                            />
+                                        </Link>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </section>
+                )}
             </div>
         </main>
     );

@@ -11,11 +11,11 @@ class DemoSeeder extends Seeder
     public function run(): void
     {
         $founders = [
-            ['Maya Okafor', 'maya@demo.test', ['journey_stage' => 'raising_first_round', 'goal' => 'raise_funding', 'team_size' => '2_5']],
-            ['Sam Delacroix', 'sam@demo.test', ['journey_stage' => 'building_mvp', 'goal' => 'validate_direction', 'team_size' => 'solo']],
-            ['Priya Natarajan', 'priya@demo.test', ['journey_stage' => 'early_traction', 'goal' => 'investor_blind_spots', 'team_size' => '6_10']],
-            ['Jonas Lindqvist', 'jonas@demo.test', ['journey_stage' => 'scaling_post_seed', 'goal' => 'find_funding', 'team_size' => '11_plus']],
-            ['Aisha Rahman', 'aisha@demo.test', ['journey_stage' => 'pivoting', 'goal' => 'execution_focus', 'team_size' => '2_5']],
+            ['Maya Okafor', 'maya@demo.test', ['journey_stage' => 'raising_first_round', 'goal' => ['raise_funding', 'find_funding'], 'team_size' => '2_5']],
+            ['Sam Delacroix', 'sam@demo.test', ['journey_stage' => 'building_mvp', 'goal' => ['validate_direction'], 'team_size' => 'solo']],
+            ['Priya Natarajan', 'priya@demo.test', ['journey_stage' => 'early_traction', 'goal' => ['investor_blind_spots', 'win_customers'], 'team_size' => '6_10']],
+            ['Jonas Lindqvist', 'jonas@demo.test', ['journey_stage' => 'scaling_post_seed', 'goal' => ['find_funding'], 'team_size' => '11_plus']],
+            ['Aisha Rahman', 'aisha@demo.test', ['journey_stage' => 'pivoting', 'goal' => ['execution_focus'], 'team_size' => '2_5']],
         ];
 
         foreach ($founders as [$name, $email, $answers]) {
