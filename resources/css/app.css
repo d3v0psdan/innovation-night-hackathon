@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './laravel-cloud.css';
 @import './scaleupmap.css';
 
 @import 'tw-animate-css';
