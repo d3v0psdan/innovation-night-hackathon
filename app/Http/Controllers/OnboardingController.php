@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Onboarding\OnboardingRouter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,7 +43,7 @@ class OnboardingController extends Controller
         $option = Rule::in(array_keys($question['options']));
 
         $validated = ($question['multiple'] ?? false)
-            ? $request->validate(['answer' => ['required', 'array', 'min:1'], 'answer.*' => ['string', $option]])
+            ? $request->validate(['answer' => ['required', 'array', 'min:1'], 'answer.*' => ['string', 'distinct', $option]])
             : $request->validate(['answer' => ['required', 'string', $option]]);
 
         $user = $request->user();
@@ -55,9 +56,19 @@ class OnboardingController extends Controller
         }
 
         $user->onboarded_at = now();
+        $this->resetTutorialProgress($user, $router);
         $user->save();
 
         return redirect()->route($router->destinationFor($user));
+    }
+
+    /** New answers may add tools. Keep what is still recommended as done, reopen the tutorial, allow one more re-engagement email. */
+    private function resetTutorialProgress(User $user, OnboardingRouter $router): void
+    {
+        $recommended = $router->recommendationsFor($user);
+        $user->tutorial_done = array_values(array_intersect($user->tutorial_done ?? [], $recommended));
+        $user->tutorial_completed_at = array_diff($recommended, $user->tutorial_done) === [] && $recommended !== [] ? $user->tutorial_completed_at : null;
+        $user->re_engaged_at = null;
     }
 
     /** Steps must be answered in order, so a typed URL cannot skip ahead. */

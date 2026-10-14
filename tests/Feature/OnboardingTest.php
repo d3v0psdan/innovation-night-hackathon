@@ -93,3 +93,9 @@ it('lets a new registration reach onboarding without email verification', functi
 
     $this->get(route('dashboard'))->assertRedirect(route('onboarding.show', 1));
 });
+
+it('rejects a duplicated goal', function () {
+    $user = User::factory()->create(['onboarding' => ['journey_stage' => 'early_traction']]);
+
+    $this->actingAs($user)->post(route('onboarding.store', 2), ['answer' => ['raise_funding', 'raise_funding']])->assertSessionHasErrors('answer.0');
+});

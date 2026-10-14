@@ -26,6 +26,10 @@ Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
 });
 
 // Demo only: see the re-engagement email in the browser for the seeded stalled founder.
-Route::middleware('auth')->get('mail/re-engage/{user}', fn (User $user) => (new ReEngageFounder($user))->render())->name('mail.re-engage');
+Route::middleware('auth')->get('mail/re-engage/{user}', function (User $user) {
+    abort_unless($user->is(request()->user()) && $user->onboarded_at !== null, 403);
+
+    return (new ReEngageFounder($user))->render();
+})->name('mail.re-engage');
 
 require __DIR__.'/settings.php';

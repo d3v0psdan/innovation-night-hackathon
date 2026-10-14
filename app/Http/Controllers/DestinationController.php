@@ -48,9 +48,8 @@ class DestinationController extends Controller
     /** Marks the tool done and moves the founder on to the next recommended tool, or the dashboard when none is left. */
     public function done(Request $request, OnboardingRouter $router, string $route): RedirectResponse
     {
-        abort_unless(array_key_exists($route, $this->destinations()), 404);
-
         $user = $request->user();
+        abort_unless(in_array($route, $router->recommendationsFor($user), true), 404);
         $user->tutorial_done = array_values(array_unique([...($user->tutorial_done ?? []), $route]));
 
         $next = $this->nextUndone($request, $router);

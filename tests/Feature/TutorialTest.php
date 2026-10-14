@@ -50,3 +50,23 @@ it('rejects marking an unknown tool done', function () {
         ->post(route('tutorial.done', 'destination.nope'))
         ->assertNotFound();
 });
+
+it('refuses to mark a tool done that was never recommended', function () {
+    $this->actingAs(founderWithTwoTools())
+        ->post(route('tutorial.done', 'destination.score'))
+        ->assertNotFound();
+});
+
+it('reopens the tutorial when new answers add a tool, keeping what is still done', function () {
+    $user = founderWithTwoTools(['destination.memo', 'destination.investors']);
+    $user->forceFill(['tutorial_completed_at' => now(), 're_engaged_at' => now()])->save();
+
+    $this->actingAs($user)->post(route('onboarding.store', 1), ['answer' => 'early_traction']);
+    $this->actingAs($user)->post(route('onboarding.store', 2), ['answer' => ['raise_funding', 'investor_blind_spots']]);
+    $this->actingAs($user)->post(route('onboarding.store', 3), ['answer' => 'solo'])->assertRedirect(route('destination.memo'));
+
+    $fresh = $user->fresh();
+    expect($fresh->tutorial_done)->toBe(['destination.memo'])
+        ->and($fresh->tutorial_completed_at)->toBeNull()
+        ->and($fresh->re_engaged_at)->toBeNull();
+});

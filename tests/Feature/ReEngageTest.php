@@ -44,3 +44,11 @@ it('previews the email in the browser for a logged in user', function () {
 
     $this->actingAs($stalled)->get(route('mail.re-engage', $stalled))->assertOk()->assertSee('North Star Sprint');
 });
+
+it('only lets a founder preview their own email', function () {
+    $stalled = stalledFounder();
+    $other = stalledFounder();
+
+    $this->actingAs($other)->get(route('mail.re-engage', $stalled))->assertForbidden();
+    $this->actingAs(User::factory()->create())->get(route('mail.re-engage', $stalled))->assertForbidden();
+});
