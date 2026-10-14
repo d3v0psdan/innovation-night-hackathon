@@ -50,6 +50,7 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'onboarded_at' => 'datetime',
             'tutorial_done' => 'array',
             'tutorial_completed_at' => 'datetime',
+            're_engaged_at' => 'datetime',
             'two_factor_confirmed_at' => 'datetime',
         ];
     }

@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\OnboardingController;
+use App\Mail\ReEngageFounder;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
@@ -22,5 +24,8 @@ Route::middleware(['auth', 'verified', 'onboarded'])->group(function () {
         }
     }
 });
+
+// Demo only: see the re-engagement email in the browser for the seeded stalled founder.
+Route::middleware('auth')->get('mail/re-engage/{user}', fn (User $user) => (new ReEngageFounder($user))->render())->name('mail.re-engage');
 
 require __DIR__.'/settings.php';
