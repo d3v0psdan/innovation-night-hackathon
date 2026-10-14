@@ -12,7 +12,7 @@ export default function Destination({
         <main className="min-h-screen bg-sm-canvas px-4 py-10 font-sm-body">
             <Head title={title} />
             <div className="mx-auto max-w-xl rounded-2xl border border-sm-primary/12 bg-sm-card p-8 shadow-sm">
-                <p className="text-[11px] tracking-widest text-sm-accent uppercase">
+                <p className="text-[11px] tracking-widest text-sm-primary uppercase">
                     Your first tool
                 </p>
                 <h1 className="mt-2 flex items-center gap-2 font-sm-display text-3xl text-sm-title">
