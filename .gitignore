@@ -42,3 +42,10 @@ yarn-error.log
 /boost.json
 /opencode.json
 /opencode.jsonc
+
+# Innovation Night kit is part of the repo
+!/.claude
+/.claude/settings.local.json
+!/CLAUDE.md
+!/AGENTS.md
+!/.mcp.json
