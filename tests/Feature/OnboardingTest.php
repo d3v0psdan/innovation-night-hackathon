@@ -36,3 +36,9 @@ it('routes to the destination after the last step', function () {
     $this->actingAs($user->fresh())->get('/dashboard/memo')->assertOk();
     expect($user->fresh()->onboarded_at)->not->toBeNull();
 });
+
+it('sends a user who skips ahead back to the first unanswered step', function () {
+    $this->actingAs(User::factory()->create())
+        ->post('/onboarding/3', ['answer' => 'solo'])
+        ->assertRedirect('/onboarding/1');
+});

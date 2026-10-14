@@ -15,5 +15,5 @@ Write `PITCH.md`, readable in under 3 minutes
 
 Also
 - Run the full test suite one last time
-- Take screenshots of each screen with Playwright MCP into `pitch/` as a backup
+- Take screenshots of each screen into `pitch/` as a backup. Fastest proven way: a throwaway Pest browser test that seeds the user state, calls `visit(url)->on()->desktop()->assertSee(...)->screenshot(true, 'name')` per screen (no clicks), then move `tests/Browser/Screenshots/*.png` to `pitch/` and delete the test
 - Keep wording plain. No buzzwords

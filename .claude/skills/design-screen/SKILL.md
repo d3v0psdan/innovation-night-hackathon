@@ -13,6 +13,7 @@ Before writing JSX
 
 Building
 - Pages go in `resources/js/pages/`, one file per screen
+- The starter wraps every page in the sidebar `AppLayout` from `resources/js/app.tsx`. Onboarding and landing screens must be standalone: add their names to the `return null` case in that `layout` switch
 - Icons from `@phosphor-icons/react` with `weight="bold"`
 - Mobile first. Check it works at 375px wide
 - One clear primary action per screen
