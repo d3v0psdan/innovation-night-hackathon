@@ -1,7 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { Radio, RadioGroup } from "@/components/ui/radio-group";
 import { Head, useForm } from "@inertiajs/react";
-import { ArrowRight } from "@phosphor-icons/react";
+import { ArrowRight, CircleNotch } from "@phosphor-icons/react";
 import { FormEvent } from "react";
 
 type Question = { key: string; label: string; options: Record<string, string> };
@@ -61,12 +61,27 @@ export default function Step({
                         {form.errors.answer}
                     </p>
                 )}
+                <p id="continue-hint" className="mt-6 text-sm text-sm-meta">
+                    {form.data.answer === ""
+                        ? "Pick one to continue."
+                        : "You can change this later."}
+                </p>
                 <button
                     type="submit"
+                    aria-describedby="continue-hint"
                     disabled={form.processing || form.data.answer === ""}
-                    className="mt-8 inline-flex items-center gap-2 rounded-full bg-sm-primary px-6 py-2 text-white hover:bg-sm-primary-hover focus-visible:ring-2 focus-visible:ring-sm-accent focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60"
+                    className="mt-3 inline-flex items-center gap-2 rounded-full bg-sm-primary px-6 py-3 text-white hover:bg-sm-primary-hover focus-visible:ring-2 focus-visible:ring-sm-accent focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60"
                 >
-                    Continue <ArrowRight weight="bold" aria-hidden="true" />
+                    {form.processing ? "Saving" : "Continue"}
+                    {form.processing ? (
+                        <CircleNotch
+                            weight="bold"
+                            aria-hidden="true"
+                            className="animate-spin"
+                        />
+                    ) : (
+                        <ArrowRight weight="bold" aria-hidden="true" />
+                    )}
                 </button>
             </form>
         </main>
