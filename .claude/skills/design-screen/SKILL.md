@@ -7,7 +7,8 @@ description: Build a polished Inertia React page using Origin UI components, Pho
 
 Before writing JSX
 
-1. Read `resources/css/laravel-cloud.css` and `resources/css/scaleupmap.css` (whichever exist) and use their variables and classes. No hardcoded hex.
+1. Read `resources/css/laravel-cloud.css` and use its variables and classes. Add `resources/css/scaleupmap.css` (`sm-` utilities) only for a ScaleupMap challenge. No hardcoded hex.
+   Installed shadcn components import lucide icons. Replace them with Phosphor `weight="bold"` before using the component.
 2. Check `resources/js/components/ui/` for components already installed. Reuse first.
 3. Need a new one? Origin UI now lives at coss.com/ui. Find the item name there (for example `p-radio-group-4`, `radio-group`) and install it with `npx shadcn@latest add @originui/<name> --yes`. Never hand-copy component code. Delete the generated example file in `resources/js/components/` after you have used it.
 

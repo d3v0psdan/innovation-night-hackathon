@@ -11,7 +11,7 @@ The model (create it on the first run, reuse after)
 - `OnboardingController` with `show(step)` and `store(step)`
 - `EnsureOnboarded` middleware sends users without `onboarded_at` to step 1
 
-Already built on main: all of the above plus `firstUnansweredBefore()` (a typed URL cannot skip steps) and `answer` prefill so back and "Change my answers" show the saved pick. Check `app/Onboarding/` before creating anything.
+Already built on main: all of the above plus `firstUnansweredBefore()` (a typed URL cannot skip steps) and `answer` prefill so back and "Change my answers" show the saved pick. Check `app/Onboarding/` before creating anything. For a sponsor other than ScaleupMap, replace the questions in `questions.php` and keep everything else.
 
 Adding a step
 1. Add the question to `questions.php`. That's usually the whole backend change.

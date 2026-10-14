@@ -5,7 +5,7 @@ description: Seed demo users and data for the pitch. Use when preparing the demo
 
 # Demo seed
 
-In `database/seeders/DemoSeeder.php`, called from `DatabaseSeeder`
+`database/seeders/DemoSeeder.php` already exists and is called from `DatabaseSeeder` (five ScaleupMap founders plus `fresh@demo.test`). Edit it, do not recreate it. It holds
 - One user per user type from `PLAN.md`, emails like `newbie@demo.test`, password `password`
 - One fresh user with no onboarding, so we can show the flow live
 - Realistic names and content. No lorem ipsum

@@ -1,6 +1,6 @@
 ---
 name: scaleupmap
-description: ScaleupMap sponsor facts, brand tokens, real founder onboarding answers and the goal to destination table. Use when the challenge mentions ScaleupMap or founders, before /plan-feature, and whenever routing, questions or styling need the real product data.
+description: ScaleupMap sponsor facts, brand tokens, real founder onboarding answers and the goal to destination table. Use only when the challenge is from ScaleupMap, before /plan-feature, and whenever routing, questions or styling need the real product data.
 ---
 
 # ScaleupMap
