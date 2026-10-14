@@ -8,7 +8,8 @@ description: Decide where a user lands after onboarding based on their answers. 
 All routing lives in `app/Onboarding/OnboardingRouter.php`
 - An ordered array of rules. Each rule is answers to match plus a route name
 - First match wins. Last rule is the fallback, always
-- One public method `destinationFor(User $user): string`
+- Two public methods: `destinationFor(User $user): string` (route name) and `reasonFor(User $user): string` (the "Because you said ..." line the landing page shows)
+- Already built on main with the ScaleupMap goal table and a dataset test in `tests/Unit/OnboardingRouterTest.php`
 
 Adding a rule
 1. Add it above the fallback
