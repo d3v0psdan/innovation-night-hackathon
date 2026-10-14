@@ -14,7 +14,8 @@
       "Bash(git commit:*)",
       "Bash(php.bat:*)",
       "Bash(composer.bat:*)",
-      "Bash(php.bat vendor/bin/pint:*)"
+      "Bash(php.bat vendor/bin/pint:*)",
+      "Bash(npx vp:*)"
     ],
     "deny": [
       "Read(./.env)",

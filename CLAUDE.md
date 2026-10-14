@@ -13,6 +13,7 @@
 ## Commands
 - In Git Bash on Windows `php` and `composer` resolve only as `php.bat` and `composer.bat` (Herd). Use those in Bash tool calls
 - Dev server `composer run dev`
+- Format and lint TS/CSS `npx vp check --fix <files>` (vite-plus, the starter's formatter). Never run it repo-wide, it rewrites 30+ markdown and json files
 - Tests `php artisan test`
 - Browser tests `php artisan test --testsuite=Browser`
 - Fresh demo data `php artisan migrate:fresh --seed`
