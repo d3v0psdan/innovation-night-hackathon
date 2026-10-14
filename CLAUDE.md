@@ -11,6 +11,7 @@
 - If the challenge is from ScaleupMap, sponsor facts, real onboarding answer keys and the goal to destination table come from `/scaleupmap`. If the sponsor is someone else, skip `/scaleupmap`, keep the plumbing in `app/Onboarding/`, and replace `questions.php`, the router rules and the destination stubs with the real sponsor's
 
 ## Commands
+- In Git Bash on Windows `php` and `composer` resolve only as `php.bat` and `composer.bat` (Herd). Use those in Bash tool calls
 - Dev server `composer run dev`
 - Tests `php artisan test`
 - Browser tests `php artisan test --testsuite=Browser`
