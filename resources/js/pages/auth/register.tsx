@@ -1,4 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
+import { ArrowRight } from '@phosphor-icons/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -125,8 +126,13 @@ export default function Register({ passwordRules }: Props) {
 
                         <div className="text-center text-sm text-muted-foreground">
                             Already have an account?{' '}
-                            <TextLink href={login()} tabIndex={6}>
+                            <TextLink
+                                href={login()}
+                                tabIndex={6}
+                                className="inline-flex items-center gap-1"
+                            >
                                 Sign in
+                                <ArrowRight weight="bold" className="size-3.5" />
                             </TextLink>
                         </div>
                     </>
@@ -139,5 +145,4 @@ export default function Register({ passwordRules }: Props) {
 Register.layout = {
     title: 'Get your score. Takes 2 minutes.',
     description: 'Step 1 of 4. Three questions follow.',
-    funnel: true,
 };

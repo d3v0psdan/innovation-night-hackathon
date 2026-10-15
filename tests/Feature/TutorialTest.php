@@ -32,11 +32,9 @@ it('completes the tutorial and lands on the dashboard after the last tool', func
     expect($user->fresh()->tutorial_completed_at)->not->toBeNull();
 
     $this->actingAs($user->fresh())->get(route('dashboard'))
-        ->assertInertia(fn ($page) => $page->component('destination')
-            ->where('title', 'Dashboard')
-            ->where('allDone', true)
-            ->where('checklist.0.done', true)
-            ->where('checklist.1.done', true));
+        ->assertInertia(fn ($page) => $page->component('dashboard')
+            ->where('tools.0.done', true)
+            ->where('tools.1.done', true));
 });
 
 it('sends the dashboard to the first tool not done yet', function () {

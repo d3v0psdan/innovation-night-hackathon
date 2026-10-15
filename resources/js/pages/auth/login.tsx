@@ -1,4 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
+import { ArrowRight } from '@phosphor-icons/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -93,8 +94,13 @@ export default function Login({ status, canResetPassword }: Props) {
 
                         <div className="text-center text-sm text-muted-foreground">
                             No account yet?{' '}
-                            <TextLink href={register()} tabIndex={6}>
+                            <TextLink
+                                href={register()}
+                                tabIndex={6}
+                                className="inline-flex items-center gap-1"
+                            >
                                 Get your score free
+                                <ArrowRight weight="bold" className="size-3.5" />
                             </TextLink>
                         </div>
                     </>

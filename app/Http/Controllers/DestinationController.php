@@ -11,12 +11,31 @@ use Inertia\Response;
 
 class DestinationController extends Controller
 {
-    /** The dashboard sends a founder to the next tool they have not done yet. Nothing left means the dashboard itself. */
+    /** The dashboard sends a founder to the next tool they have not done yet. Nothing left means the dashboard page. */
     public function dashboard(Request $request, OnboardingRouter $router): Response|RedirectResponse
     {
         $next = $this->nextUndone($request, $router);
+        if ($next !== null) {
+            return redirect()->route($next);
+        }
 
-        return $next === null ? $this->show($request, $router, 'dashboard') : redirect()->route($next);
+        $destinations = $this->destinations();
+        $user = $request->user();
+        $done = $user->tutorial_done ?? [];
+        $opened = $user->tutorial_opened ?? [];
+
+        return Inertia::render('dashboard', [
+            'name' => $user->name,
+            'reason' => $router->reasonFor($user),
+            'tools' => array_map(fn (string $name) => [
+                'title' => $destinations[$name]['title'],
+                'icon' => $destinations[$name]['icon'],
+                'url' => route($name, [], false),
+                'done' => in_array($name, $done, true),
+                'opened' => in_array($name, $opened, true),
+            ], $router->recommendationsFor($user)),
+            'answers' => $this->answers($user),
+        ]);
     }
 
     /** One tutorial step: why you are here, what the tool does, the first action, and the checklist of every recommended tool. */
@@ -94,6 +113,28 @@ class DestinationController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * The founder's onboarding answers as question and picked labels, in question order.
+     *
+     * @return list<array{question: string, answer: string}>
+     */
+    private function answers(User $user): array
+    {
+        $picked = $user->onboarding ?? [];
+        $rows = [];
+
+        foreach (require app_path('Onboarding/questions.php') as $question) {
+            $values = (array) ($picked[$question['key']] ?? []);
+            $labels = array_map(fn (string $value): string => $question['options'][$value] ?? $value, $values);
+            $rows[] = [
+                'question' => $question['label'],
+                'answer' => $labels === [] ? 'Not answered' : implode(', ', $labels),
+            ];
+        }
+
+        return $rows;
     }
 
     /** @return array<string, array{path: string, title: string, icon: string, blurb: string, first_action: string}> */
