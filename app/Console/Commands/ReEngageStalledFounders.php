@@ -20,7 +20,7 @@ class ReEngageStalledFounders extends Command
             ->where('onboarded_at', '<=', now()->subHours((int) $this->option('hours')))
             ->whereNull('tutorial_completed_at')
             ->whereNull('re_engaged_at')
-            ->where(fn ($query) => $query->whereNull('tutorial_done')->orWhereJsonLength('tutorial_done', 0))
+            ->where(fn ($query) => $query->whereNull('tutorial_opened')->orWhereJsonLength('tutorial_opened', 0))
             ->get();
 
         foreach ($stalled as $founder) {

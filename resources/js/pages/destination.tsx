@@ -39,6 +39,7 @@ type Item = {
     icon: IconName;
     url: string;
     done: boolean;
+    opened: boolean;
     current: boolean;
 };
 type Props = {
@@ -85,9 +86,21 @@ function DestinationPage({
         form.post(markDone.url(route));
     };
     const status = (item: Item) =>
-        item.done ? 'done' : item.current ? 'current tool' : 'next';
+        item.done
+            ? 'done'
+            : item.current
+              ? 'current tool'
+              : item.opened
+                ? 'opened'
+                : 'next';
     const stateLabel = (item: Item) =>
-        item.done ? 'Done' : item.current ? 'Now' : 'Next';
+        item.done
+            ? 'Done'
+            : item.current
+              ? 'Now'
+              : item.opened
+                ? 'Opened'
+                : 'Next';
 
     return (
         <FunnelLayout

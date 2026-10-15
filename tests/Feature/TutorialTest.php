@@ -70,3 +70,20 @@ it('reopens the tutorial when new answers add a tool, keeping what is still done
         ->and($fresh->tutorial_completed_at)->toBeNull()
         ->and($fresh->re_engaged_at)->toBeNull();
 });
+
+it('records a recommended tool as opened once when the founder visits it', function () {
+    $user = founderWithTwoTools();
+
+    $this->actingAs($user)->get(route('destination.memo'))->assertOk();
+    $this->actingAs($user)->get(route('destination.memo'))->assertOk();
+
+    expect($user->fresh()->tutorial_opened)->toBe(['destination.memo']);
+});
+
+it('does not record a tool that was not recommended', function () {
+    $user = founderWithTwoTools();
+
+    $this->actingAs($user)->get(route('destination.sprint'))->assertOk();
+
+    expect($user->fresh()->tutorial_opened)->toBeNull();
+});

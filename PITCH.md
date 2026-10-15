@@ -14,7 +14,7 @@ Before you start: `php.bat artisan migrate:fresh --seed`, `composer run dev`, op
 
 4. **Two users, two results, 20 seconds.** Sign out. Sign in as `sam@demo.test`. Dashboard sends him straight to the Journey map with a different reason. Same rule table, different answers, different destination.
 
-5. **Bonus, 20 seconds.** Sign in as `stalled@demo.test`, open `/mail/re-engage/{id}`. The email names the tool she never opened and quotes her own answer. In the terminal: `php.bat artisan onboarding:re-engage`. Output: "Wrote to stalled@demo.test". Scheduled daily, sent once.
+5. **Bonus, 20 seconds.** Sign in as `maya@demo.test`, open the Investor directory: the checklist shows the memo as Opened, so we know routing worked and where she stalled. Sign in as `stalled@demo.test`, open `/mail/re-engage/{id}`. The email names the tool she never opened and quotes her own answer. In the terminal: `php.bat artisan onboarding:re-engage`. Output: "Wrote to stalled@demo.test". Scheduled daily, sent once.
 
 6. **Why it holds, 15 seconds.** One ordered rule table decides landing, checklist order and the email, so they never disagree. Every rule has a Pest test. 74 feature tests green. Brand kit with tokens, no hex, light and dark.
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Onboarding\OnboardingRouter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,12 +26,14 @@ class DestinationController extends Controller
         $user = $request->user();
         $done = $user->tutorial_done ?? [];
         $recommended = $router->recommendationsFor($user);
+        $opened = $this->recordOpened($user, $route, $recommended);
 
         $checklist = array_map(fn (string $name) => [
             'title' => $destinations[$name]['title'],
             'icon' => $destinations[$name]['icon'],
             'url' => route($name, [], false),
             'done' => in_array($name, $done, true),
+            'opened' => in_array($name, $opened, true),
             'current' => $name === $route,
         ], $recommended);
 
@@ -59,6 +62,24 @@ class DestinationController extends Controller
         $user->save();
 
         return redirect()->route($next ?? 'dashboard');
+    }
+
+    /**
+     * Tracks whether routing worked: the first visit to a recommended tool is stored once.
+     *
+     * @param  list<string>  $recommended
+     * @return list<string>
+     */
+    private function recordOpened(User $user, string $route, array $recommended): array
+    {
+        $opened = $user->tutorial_opened ?? [];
+        if (in_array($route, $recommended, true) && ! in_array($route, $opened, true)) {
+            $opened = [...$opened, $route];
+            $user->tutorial_opened = $opened;
+            $user->save();
+        }
+
+        return $opened;
     }
 
     private function nextUndone(Request $request, OnboardingRouter $router): ?string
