@@ -76,20 +76,22 @@ function StepForm({ step, total, question, answer }: Props) {
                     </Link>
                 </div>
                 <p className="mt-4 text-xs tracking-widest text-sm-primary uppercase">
-                    Step {step} of {total}
+                    Step {step + 1} of {total + 1}
                 </p>
                 <div
                     role="progressbar"
                     aria-label="Onboarding progress"
                     aria-valuemin={1}
-                    aria-valuemax={total}
-                    aria-valuenow={step}
-                    aria-valuetext={'Step ' + step + ' of ' + total}
+                    aria-valuemax={total + 1}
+                    aria-valuenow={step + 1}
+                    aria-valuetext={'Step ' + (step + 1) + ' of ' + (total + 1)}
                     className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-sm-primary/12"
                 >
                     <div
                         className="h-full rounded-full bg-sm-primary"
-                        style={{ width: (step / total) * 100 + '%' }}
+                        style={{
+                            width: ((step + 1) / (total + 1)) * 100 + '%',
+                        }}
                     />
                 </div>
                 <fieldset

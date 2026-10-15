@@ -328,10 +328,10 @@ export default function Landing3() {
                                     See your startup the way investors do.
                                 </h1>
                                 <p className="mt-6 max-w-[34rem] enter text-lg text-muted-foreground enter-2">
-                                    Founder, pick where you are. Get the score a
-                                    VC analyst would give you, see the gaps they
-                                    would flag, and fix them before you pitch.
-                                    First score in under 2 minutes.
+                                    Built for first-time founders. Get the score
+                                    a VC analyst would give you, see the gaps
+                                    they would flag, and fix them before you
+                                    pitch. First score in under 2 minutes.
                                 </p>
                                 <div className="mt-8 flex enter flex-wrap gap-4 enter-3">
                                     <Link href={cta} className="btn-ink h-10">
@@ -491,7 +491,7 @@ export default function Landing3() {
                             </p>
                             <div
                                 className={cn(
-                                    'mt-6 border border-rule bg-dot-grid p-4 sm:p-6 lg:p-12',
+                                    'mt-6 rounded-2xl border border-rule bg-dot-grid p-4 sm:p-6 lg:p-12',
                                     BOARD_PERSPECTIVE_CLASS,
                                 )}
                             >
@@ -507,10 +507,10 @@ export default function Landing3() {
                                                 <li
                                                     key={tool.key}
                                                     className={cn(
-                                                        'group border border-border bg-background p-5 transition-[translate,box-shadow,border-color,opacity] duration-200 motion-reduce:transition-none',
+                                                        'group rounded-xl border bg-background p-5 transition-[translate,box-shadow,border-color,opacity] duration-200 motion-reduce:transition-none',
                                                         isRecommended
-                                                            ? 'border-brand shadow-card lg:translate-z-10'
-                                                            : 'lg:translate-z-0 lg:opacity-60 lg:hover:translate-z-6 lg:hover:opacity-100',
+                                                            ? 'border-brand/40 shadow-card ring-1 ring-brand/10 lg:translate-z-10'
+                                                            : 'border-border lg:translate-z-0 lg:opacity-60 lg:hover:translate-z-6 lg:hover:opacity-100 lg:hover:shadow-card',
                                                     )}
                                                 >
                                                     <div className="flex items-center justify-between gap-3">
@@ -520,16 +520,18 @@ export default function Landing3() {
                                                             ).padStart(2, '0')}
                                                         </span>
                                                         {isRecommended ? (
-                                                            <span className="rounded-sm bg-navy-3 px-2 py-0.5 font-mono text-xs font-semibold text-brand">
+                                                            <span className="rounded-md bg-navy-3 px-2 py-0.5 font-mono text-xs font-semibold text-brand">
                                                                 Next
                                                             </span>
                                                         ) : null}
                                                     </div>
-                                                    <ToolIcon
-                                                        weight="bold"
-                                                        aria-hidden="true"
-                                                        className="mt-6 size-5 text-brand"
-                                                    />
+                                                    <span className="mt-6 flex size-9 items-center justify-center rounded-lg bg-navy-3 text-brand">
+                                                        <ToolIcon
+                                                            weight="bold"
+                                                            aria-hidden="true"
+                                                            className="size-5"
+                                                        />
+                                                    </span>
                                                     <h3 className="mt-3 text-lg font-medium">
                                                         {tool.title}
                                                     </h3>
@@ -845,7 +847,7 @@ function VentureFace({
             aria-label={`${VENTURE.name}, ${faceLabel}`}
             inert={isHidden}
             className={cn(
-                'col-start-1 row-start-1 flex flex-col rounded-lg border border-border bg-background backface-hidden',
+                'col-start-1 row-start-1 flex flex-col overflow-hidden rounded-xl border border-border bg-background shadow-card backface-hidden',
                 isInvestorView && 'rotate-y-180',
             )}
         >
@@ -952,7 +954,7 @@ function FlagMarker({ flag, isOpen, onOpen }: FlagMarkerProps) {
                     onOpen(null);
                 }
             }}
-            className="absolute top-3 right-0 flex size-7 items-center justify-center rounded-md bg-brand text-brand-foreground transition-colors duration-100 hover:bg-brand-hover"
+            className="absolute top-3 right-0 flex size-7 items-center justify-center rounded-lg bg-brand text-brand-foreground transition-colors duration-100 hover:bg-brand-hover"
         >
             <Flag weight="bold" className="size-4" />
         </button>
