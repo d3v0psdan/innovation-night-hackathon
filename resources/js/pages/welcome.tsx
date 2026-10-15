@@ -2,14 +2,160 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import {
     ArrowRight,
     Bank,
+    ChartBar,
     CreditCard,
+    Eye,
     FileText,
+    Flag,
+    Lightning,
+    MapTrifold,
     Timer,
+    UserCircle,
+    UsersThree,
+    type Icon,
 } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
+import type { KeyboardEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AppearanceToggleTab from '@/components/appearance-tabs';
 import { BrandLogo } from '@/components/brand-logo';
+import { cn } from '@/lib/utils';
 import { dashboard, login, register } from '@/routes';
+
+type ToolKey = 'score' | 'memo' | 'investors' | 'map' | 'sprint';
+
+type Tool = {
+    key: ToolKey;
+    title: string;
+    blurb: string;
+    firstAction: string;
+    icon: Icon;
+};
+
+type JourneyStage = {
+    label: string;
+    toolKeys: ToolKey[];
+};
+
+// Board order is the journey order: the recommended path runs left to right.
+const TOOLS: Tool[] = [
+    {
+        key: 'score',
+        title: 'ScaleupMap Score',
+        blurb: 'See your venture the way investors do and fix the blind spots first.',
+        firstAction:
+            'Answer the 12 score questions about your venture. About 10 minutes.',
+        icon: ChartBar,
+    },
+    {
+        key: 'memo',
+        title: 'Investment memo',
+        blurb: 'Turn your venture into the one page investors ask for.',
+        firstAction:
+            'Fill in the problem, solution and traction sections. About 20 minutes.',
+        icon: FileText,
+    },
+    {
+        key: 'investors',
+        title: 'Investor directory',
+        blurb: 'Browse investors and grants that match your stage.',
+        firstAction:
+            'Filter by your stage and save three investors to your shortlist.',
+        icon: UsersThree,
+    },
+    {
+        key: 'map',
+        title: 'Journey map',
+        blurb: 'Map where you are and the next three moves before you build more.',
+        firstAction:
+            'Place your venture on the map and pick your next milestone.',
+        icon: MapTrifold,
+    },
+    {
+        key: 'sprint',
+        title: 'North Star Sprint',
+        blurb: 'One metric, one week, a daily plan to move it.',
+        firstAction:
+            'Pick the one metric that matters this week and set a target.',
+        icon: Lightning,
+    },
+];
+
+// Stage labels match onboarding question "journey_stage" in app/Onboarding/questions.php.
+const JOURNEY_STAGES: JourneyStage[] = [
+    { label: 'Looking for an idea', toolKeys: ['map', 'score'] },
+    { label: 'Building an MVP', toolKeys: ['score', 'sprint'] },
+    { label: 'Early traction', toolKeys: ['memo', 'sprint'] },
+    {
+        label: 'Raising a first round',
+        toolKeys: ['score', 'memo', 'investors'],
+    },
+    { label: 'Scaling after seed', toolKeys: ['investors', 'map', 'sprint'] },
+    { label: 'Pivoting', toolKeys: ['map', 'score', 'sprint'] },
+];
+
+const STAGE_KEY_DIRECTIONS: Record<string, number | undefined> = {
+    ArrowDown: 1,
+    ArrowRight: 1,
+    ArrowUp: -1,
+    ArrowLeft: -1,
+};
+
+type FlagKey = 'team' | 'traction' | 'market' | 'fundability';
+
+type ProfileRow = {
+    key: FlagKey;
+    label: string;
+    value: string;
+    gap: string;
+    question: string;
+};
+
+// Sample venture shown on both faces of the card. Pure markup, so it never goes stale.
+const VENTURE = {
+    name: 'Northwind Robotics',
+    stage: 'Pre-seed, 4 people',
+    pitch: 'Inspection robots for pipelines that today get walked by hand.',
+};
+
+const PROFILE_ROWS: ProfileRow[] = [
+    {
+        key: 'team',
+        label: 'Team',
+        value: '2 co-founders, both business side',
+        gap: 'No technical co-founder.',
+        question: 'Who builds the robots while the CEO is in a sales meeting?',
+    },
+    {
+        key: 'traction',
+        label: 'Traction',
+        value: '$8.4K MRR from 2 pilots',
+        gap: 'Only 3 months of revenue.',
+        question: 'What keeps the first customers past month 12?',
+    },
+    {
+        key: 'market',
+        label: 'Market',
+        value: '$4.2B total market',
+        gap: 'TAM unsourced.',
+        question: 'Where does $4.2B come from, and how many buyers pay first?',
+    },
+    {
+        key: 'fundability',
+        label: 'Fundability',
+        value: 'Pitch deck not uploaded',
+        gap: 'No deck.',
+        question: 'Can you send the deck and memo today?',
+    },
+];
+
+const SAMPLE_SCORE = 72;
+const FLIP_DURATION_MS = 600;
+const COUNT_DURATION_MS = 900;
+// Starts the count when the card is edge-on, so the number is visible while it climbs.
+const COUNT_DELAY_MS = FLIP_DURATION_MS / 2;
+const GAP_DETAIL_ID = 'investor-gap-detail';
+const TOGGLE_BUTTON_CLASS =
+    'inline-flex h-8 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors duration-100 ease-fast';
 
 const PROOF = [
     { icon: CreditCard, text: 'No credit card required' },
@@ -55,6 +201,7 @@ const OUTCOMES = [
 ];
 
 // Real customers and backers from scaleupmap.com. Files in public/brand/logos.
+// Real customers and backers from scaleupmap.com. Files in public/brand/logos.
 // scale lifts PNGs that ship with transparent padding so every mark reads at the same optical size.
 const CUSTOMERS: { name: string; file: string; scale?: number }[] = [
     { name: 'Nanostics Precision Health', file: 'nanostics.png', scale: 1.8 },
@@ -80,29 +227,68 @@ const BACKERS: { name: string; file: string; scale?: number }[] = [
     { name: 'Google for Startups', file: 'google-for-startups.png' },
 ];
 
+const FOOTER_LINKS = [
+    { label: 'Pricing', href: 'https://scaleupmap.com/billing' },
+    {
+        label: 'Community',
+        href: 'https://join.slack.com/t/scaleupmapcom-xau9343/shared_invite/zt-4akgv5h2b-l9K51CXAsoye1WigWMG7MA',
+    },
+    { label: 'One-pager', href: 'https://scaleupmap.com/one-pager' },
+    { label: 'Contact', href: 'https://scaleupmap.com/contact' },
+    { label: 'Terms', href: 'https://scaleupmap.com/tos' },
+    { label: 'Privacy', href: 'https://scaleupmap.com/privacy' },
+    { label: 'About', href: 'https://scaleupmap.com/about' },
+];
+
 const LOGO_IMAGE_CLASS =
     'w-auto opacity-80 grayscale transition-opacity duration-100 hover:opacity-100 dark:invert';
 
-// Sample venture for the rendered product frame. Pure markup, so it never goes stale.
-const GAP_SCORES = [
-    { label: 'Team', points: 9, max: 15 },
-    { label: 'Traction', points: 7, max: 20 },
-    { label: 'Market', points: 11, max: 20 },
-    { label: 'Fundability', points: 14, max: 20 },
-];
-const SAMPLE_SCORE = 72;
+const BOARD_PERSPECTIVE_CLASS = 'lg:perspective-[2000px]';
+const BOARD_PLANE_CLASS = 'lg:origin-top lg:transform-3d lg:rotate-x-[16deg]';
+
+/** Horizontal centre of a tool tile on the board, as a percentage of the board width. */
+function toolCentrePercent(toolIndex: number): number {
+    return ((toolIndex + 0.5) / TOOLS.length) * 100;
+}
 
 export default function Welcome() {
     const { auth } = usePage().props;
     const cta = auth.user ? dashboard() : register();
-    const score = useCountUp(SAMPLE_SCORE);
+    const [activeStageIndex, setActiveStageIndex] = useState(0);
+    const [isInvestorView, setIsInvestorView] = useState(false);
+    const [openFlag, setOpenFlag] = useState<FlagKey | null>(null);
+    const score = useCountUp(SAMPLE_SCORE, isInvestorView);
+    const stageButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+    const activeStage = JOURNEY_STAGES[activeStageIndex];
+    const stops = TOOLS.flatMap((tool, toolIndex) =>
+        activeStage.toolKeys.includes(tool.key) ? [{ toolIndex }] : [],
+    );
+    const pathPoints = stops
+        .map(({ toolIndex }) => `${toolCentrePercent(toolIndex)},5`)
+        .join(' ');
+
+    function handleStageKeyDown(
+        event: KeyboardEvent<HTMLButtonElement>,
+        stageIndex: number,
+    ) {
+        const direction = STAGE_KEY_DIRECTIONS[event.key];
+        if (direction === undefined) {
+            return;
+        }
+        event.preventDefault();
+        const nextIndex =
+            (stageIndex + direction + JOURNEY_STAGES.length) %
+            JOURNEY_STAGES.length;
+        setActiveStageIndex(nextIndex);
+        stageButtonRefs.current[nextIndex]?.focus();
+    }
 
     return (
         <>
             <Head title="See your startup the way investors do" />
             <div className="min-h-screen bg-background text-foreground">
                 <div className="mx-auto max-w-7xl border-x border-rule">
-                    <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-rule bg-background/80 px-6 backdrop-blur-sm">
+                    <header className="flex h-16 items-center justify-between border-b border-rule px-6">
                         <Link href="/" className="flex items-center rounded-md">
                             <BrandLogo mark className="size-8 sm:hidden" />
                             <BrandLogo className="hidden h-8 sm:block" />
@@ -153,7 +339,7 @@ export default function Welcome() {
                     <main>
                         <section className="grid lg:grid-cols-2 lg:divide-x lg:divide-rule">
                             <div className="flex flex-col justify-center px-6 py-16 lg:py-24 lg:pr-12">
-                                <h1 className="enter text-4xl leading-none font-medium tracking-[-0.05em] text-balance enter-1 sm:text-5xl lg:text-6xl">
+                                <h1 className="max-w-4xl enter text-4xl leading-none font-medium tracking-[-0.05em] text-balance enter-1 sm:text-5xl lg:text-6xl">
                                     See your startup the way investors do.
                                 </h1>
                                 <p className="mt-6 max-w-[34rem] enter text-lg text-muted-foreground enter-2">
@@ -174,28 +360,254 @@ export default function Welcome() {
                                         href="#sample-score"
                                         className="btn-outline h-10"
                                     >
-                                        See a sample score
+                                        What investors see
                                     </a>
                                 </div>
-                                <p className="mt-6 enter text-sm text-muted-foreground enter-3">
+                                <p className="mt-4 text-sm text-muted-foreground">
                                     No credit card. Only a deck or company doc
                                     needed.
                                 </p>
                             </div>
 
-                            <div className="flex flex-col justify-end overflow-hidden bg-dot-grid px-6 pt-10 lg:px-12 lg:pt-16">
-                                <ScoreFrame score={score} />
+                            <div
+                                id="sample-score"
+                                className="flex flex-col gap-6 bg-dot-grid px-6 pt-10 pb-16 lg:px-12 lg:py-24"
+                            >
+                                <div
+                                    role="group"
+                                    aria-label="Choose a view"
+                                    className="inline-flex w-fit gap-1 rounded-lg bg-subtle p-1"
+                                >
+                                    <button
+                                        type="button"
+                                        aria-pressed={!isInvestorView}
+                                        onClick={() => setIsInvestorView(false)}
+                                        className={cn(
+                                            TOGGLE_BUTTON_CLASS,
+                                            !isInvestorView
+                                                ? 'bg-background text-foreground shadow-card'
+                                                : 'text-muted-foreground hover:text-foreground',
+                                        )}
+                                    >
+                                        <UserCircle
+                                            weight="bold"
+                                            className="size-4"
+                                        />
+                                        What you see
+                                    </button>
+                                    <button
+                                        type="button"
+                                        aria-pressed={isInvestorView}
+                                        onClick={() => setIsInvestorView(true)}
+                                        className={cn(
+                                            TOGGLE_BUTTON_CLASS,
+                                            isInvestorView
+                                                ? 'bg-background text-foreground shadow-card'
+                                                : 'text-muted-foreground hover:text-foreground',
+                                        )}
+                                    >
+                                        <Eye weight="bold" className="size-4" />
+                                        What investors see
+                                    </button>
+                                </div>
+
+                                <div className="perspective-[1200px]">
+                                    <div
+                                        className={cn(
+                                            'grid transition-transform duration-600 ease-entrance transform-3d motion-reduce:transition-none',
+                                            isInvestorView && 'rotate-y-180',
+                                        )}
+                                    >
+                                        <VentureFace
+                                            isInvestorView={false}
+                                            isHidden={isInvestorView}
+                                            score={score}
+                                            openFlag={openFlag}
+                                            onOpenFlag={setOpenFlag}
+                                        />
+                                        <VentureFace
+                                            isInvestorView
+                                            isHidden={!isInvestorView}
+                                            score={score}
+                                            openFlag={openFlag}
+                                            onOpenFlag={setOpenFlag}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section className="border-t border-rule px-6 py-12">
+                            <p
+                                id="stage-question"
+                                className="text-sm font-medium"
+                            >
+                                Where is your venture right now?
+                            </p>
+                            <div
+                                role="group"
+                                aria-labelledby="stage-question"
+                                className="mt-6"
+                            >
+                                <ol className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3 lg:grid-cols-6">
+                                    {JOURNEY_STAGES.map((stage, stageIndex) => {
+                                        const isActive =
+                                            stageIndex === activeStageIndex;
+                                        return (
+                                            <li key={stage.label}>
+                                                <button
+                                                    type="button"
+                                                    ref={(element) => {
+                                                        stageButtonRefs.current[
+                                                            stageIndex
+                                                        ] = element;
+                                                    }}
+                                                    aria-pressed={isActive}
+                                                    onClick={() =>
+                                                        setActiveStageIndex(
+                                                            stageIndex,
+                                                        )
+                                                    }
+                                                    onMouseEnter={() =>
+                                                        setActiveStageIndex(
+                                                            stageIndex,
+                                                        )
+                                                    }
+                                                    onKeyDown={(event) =>
+                                                        handleStageKeyDown(
+                                                            event,
+                                                            stageIndex,
+                                                        )
+                                                    }
+                                                    className={cn(
+                                                        'flex w-full flex-col items-start gap-2 border-t-2 pt-3 text-left text-sm font-medium transition-colors duration-100',
+                                                        isActive
+                                                            ? 'border-brand text-foreground'
+                                                            : 'border-rule text-muted-foreground hover:text-foreground',
+                                                    )}
+                                                >
+                                                    <span className="strip-number">
+                                                        {String(
+                                                            stageIndex + 1,
+                                                        ).padStart(2, '0')}
+                                                    </span>
+                                                    {stage.label}
+                                                </button>
+                                            </li>
+                                        );
+                                    })}
+                                </ol>
+                            </div>
+                        </section>
+
+                        <section className="px-6 pb-20">
+                            <p aria-live="polite" className="strip-label">
+                                Tools for {activeStage.label}
+                            </p>
+                            <div
+                                className={cn(
+                                    'mt-6 rounded-2xl border border-rule bg-dot-grid p-4 sm:p-6 lg:p-12',
+                                    BOARD_PERSPECTIVE_CLASS,
+                                )}
+                            >
+                                <div className={BOARD_PLANE_CLASS}>
+                                    <ul className="grid gap-3 lg:grid-cols-5 lg:gap-5 lg:transform-3d">
+                                        {TOOLS.map((tool, toolIndex) => {
+                                            const isRecommended =
+                                                activeStage.toolKeys.includes(
+                                                    tool.key,
+                                                );
+                                            const ToolIcon = tool.icon;
+                                            return (
+                                                <li
+                                                    key={tool.key}
+                                                    className={cn(
+                                                        'group rounded-xl border bg-background p-5 transition-[translate,box-shadow,border-color,opacity] duration-200 motion-reduce:transition-none',
+                                                        isRecommended
+                                                            ? 'border-brand/40 shadow-card ring-1 ring-brand/10 lg:translate-z-10'
+                                                            : 'border-border lg:translate-z-0 lg:opacity-60 lg:hover:translate-z-6 lg:hover:opacity-100 lg:hover:shadow-card',
+                                                    )}
+                                                >
+                                                    <div className="flex items-center justify-between gap-3">
+                                                        <span className="font-mono text-xs text-muted-foreground tabular-nums">
+                                                            {String(
+                                                                toolIndex + 1,
+                                                            ).padStart(2, '0')}
+                                                        </span>
+                                                        {isRecommended ? (
+                                                            <span className="rounded-md bg-navy-3 px-2 py-0.5 font-mono text-xs font-semibold text-brand">
+                                                                Next
+                                                            </span>
+                                                        ) : null}
+                                                    </div>
+                                                    <span className="mt-6 flex size-9 items-center justify-center rounded-lg bg-navy-3 text-brand">
+                                                        <ToolIcon
+                                                            weight="bold"
+                                                            aria-hidden="true"
+                                                            className="size-5"
+                                                        />
+                                                    </span>
+                                                    <h3 className="mt-3 text-lg font-medium">
+                                                        {tool.title}
+                                                    </h3>
+                                                    <p className="mt-2 text-sm text-muted-foreground">
+                                                        {tool.blurb}
+                                                    </p>
+                                                    <p
+                                                        className={cn(
+                                                            'mt-4 border-t border-rule pt-3 text-sm',
+                                                            !isRecommended &&
+                                                                'lg:hidden lg:group-hover:block',
+                                                        )}
+                                                    >
+                                                        <span className="font-medium">
+                                                            First step.
+                                                        </span>{' '}
+                                                        {tool.firstAction}
+                                                    </p>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+
+                                    <div
+                                        aria-hidden="true"
+                                        className="relative mt-6 hidden h-10 lg:block"
+                                    >
+                                        <svg
+                                            viewBox="0 0 100 10"
+                                            preserveAspectRatio="none"
+                                            className="absolute inset-0 size-full overflow-visible"
+                                        >
+                                            <polyline
+                                                points={pathPoints}
+                                                vectorEffect="non-scaling-stroke"
+                                                className="fill-none stroke-brand stroke-2"
+                                            />
+                                        </svg>
+                                        {stops.map(({ toolIndex }) => (
+                                            <span
+                                                key={toolIndex}
+                                                className="absolute top-1/2 size-2.5 -translate-1/2 rounded-full bg-brand"
+                                                style={{
+                                                    left: `${toolCentrePercent(toolIndex)}%`,
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </section>
 
                         <ul className="grid border-y border-rule sm:grid-cols-2 lg:grid-cols-4">
-                            {PROOF.map(({ icon: Icon, text }) => (
+                            {PROOF.map(({ icon: ProofIcon, text }) => (
                                 <li
                                     key={text}
                                     className="flex items-center gap-3 border-b border-rule p-6 text-base font-medium last:border-b-0 sm:border-r sm:nth-[2n]:border-r-0 lg:border-b-0 lg:last:border-r-0 lg:nth-[2n]:border-r"
                                 >
-                                    <Icon
+                                    <ProofIcon
                                         weight="bold"
+                                        aria-hidden="true"
                                         className="size-5 shrink-0 text-brand"
                                     />
                                     {text}
@@ -235,7 +647,7 @@ export default function Welcome() {
                             </div>
                         </div>
 
-                        <section className="px-6 py-20">
+                        <section className="border-t border-rule px-6 py-20">
                             <h2 className="max-w-3xl text-3xl leading-tight font-medium tracking-[-0.02em] text-balance lg:text-[2.5rem]">
                                 90% of startups fail. Most find out why in the
                                 pitch meeting.
@@ -288,7 +700,7 @@ export default function Welcome() {
                             <h2 className="text-3xl leading-tight font-medium tracking-[-0.02em] lg:text-[2.5rem]">
                                 What you get
                             </h2>
-                            <dl className="mt-12 max-w-3xl divide-y divide-rule">
+                            <dl className="mt-12 max-w-3xl divide-y divide-rule border-y border-rule">
                                 {OUTCOMES.map((outcome) => (
                                     <div
                                         key={outcome.title}
@@ -350,85 +762,49 @@ export default function Welcome() {
                         </section>
                     </main>
 
-                    <div className="flex flex-col gap-4 border-t border-rule px-6 py-6 sm:flex-row sm:items-center sm:gap-8">
-                        <p className="text-sm text-muted-foreground">
+                    <div className="flex flex-col gap-4 border-t border-rule px-6 py-6 sm:flex-row sm:items-center sm:gap-10">
+                        <p className="shrink-0 text-sm text-muted-foreground">
                             Supported by
                         </p>
-                        <ul className="flex flex-wrap items-center gap-8">
+                        <ul className="flex flex-wrap items-center gap-x-10 gap-y-4">
                             {BACKERS.map((logo) => (
-                                <li key={logo.name}>
+                                <li
+                                    key={logo.name}
+                                    className="flex h-7 items-center"
+                                >
                                     <img
                                         src={`/brand/logos/${logo.file}`}
                                         alt={logo.name}
-                                        className={LOGO_IMAGE_CLASS}
-                                        style={{
-                                            height: `${2.5 * (logo.scale ?? 1)}rem`,
-                                        }}
+                                        className="h-6 w-auto opacity-60 grayscale transition-opacity duration-100 hover:opacity-100 dark:invert"
                                     />
                                 </li>
                             ))}
                         </ul>
                     </div>
 
-                    <footer className="flex flex-col gap-6 border-t border-rule px-6 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex flex-col gap-3">
-                            <BrandLogo
-                                mark
-                                className="size-6 text-muted-foreground"
-                            />
-                            <p>
+                    <footer className="grid gap-8 border-t border-rule px-6 py-10 text-sm text-muted-foreground lg:grid-cols-[1fr_auto_auto] lg:items-center lg:gap-12">
+                        <div className="flex flex-col gap-4">
+                            <BrandLogo className="h-6 w-auto" />
+                            <p className="max-w-sm text-xs leading-relaxed">
                                 ScaleupMap Score is a trademark of ScaleupMap.
-                                Copyright 2026 ScaleupMap.
+                                Copyright 2026 ScaleupMap. All rights reserved.
                             </p>
                         </div>
                         <nav
                             aria-label="Footer"
-                            className="flex flex-wrap items-center gap-6"
+                            className="flex flex-wrap gap-x-6 gap-y-3"
                         >
-                            <a
-                                href="https://scaleupmap.com/billing"
-                                className="transition-colors duration-100 hover:text-foreground"
-                            >
-                                Pricing
-                            </a>
-                            <a
-                                href="https://join.slack.com/t/scaleupmapcom-xau9343/shared_invite/zt-4akgv5h2b-l9K51CXAsoye1WigWMG7MA"
-                                className="transition-colors duration-100 hover:text-foreground"
-                            >
-                                Community
-                            </a>
-                            <a
-                                href="https://scaleupmap.com/one-pager"
-                                className="transition-colors duration-100 hover:text-foreground"
-                            >
-                                One-pager
-                            </a>
-                            <a
-                                href="https://scaleupmap.com/contact"
-                                className="transition-colors duration-100 hover:text-foreground"
-                            >
-                                Contact
-                            </a>
-                            <a
-                                href="https://scaleupmap.com/tos"
-                                className="transition-colors duration-100 hover:text-foreground"
-                            >
-                                Terms
-                            </a>
-                            <a
-                                href="https://scaleupmap.com/privacy"
-                                className="transition-colors duration-100 hover:text-foreground"
-                            >
-                                Privacy
-                            </a>
-                            <a
-                                href="https://scaleupmap.com/about"
-                                className="transition-colors duration-100 hover:text-foreground"
-                            >
-                                About
-                            </a>
-                            <AppearanceToggleTab />
+                            {FOOTER_LINKS.map((link) => (
+                                <a
+                                    key={link.label}
+                                    href={link.href}
+                                    className="transition-colors duration-100 hover:text-foreground"
+                                >
+                                    {link.label}
+                                </a>
+                            ))}
                         </nav>
+                        <AppearanceToggleTab className="w-fit" />
                     </footer>
                 </div>
             </div>
@@ -436,86 +812,188 @@ export default function Welcome() {
     );
 }
 
-function ScoreFrame({ score }: { score: number }) {
+type VentureFaceProps = {
+    isInvestorView: boolean;
+    isHidden: boolean;
+    score: number;
+    openFlag: FlagKey | null;
+    onOpenFlag: (flag: FlagKey | null) => void;
+};
+
+/** One face of the flip card. Both faces share one grid cell; the hidden face is inert, so it leaves the tab order and the accessibility tree. */
+function VentureFace({
+    isInvestorView,
+    isHidden,
+    score,
+    openFlag,
+    onOpenFlag,
+}: VentureFaceProps) {
+    const faceLabel = isInvestorView ? 'What investors see' : 'What you see';
+
     return (
-        <div
-            id="sample-score"
-            aria-label="Sample ScaleupMap Score for Northwind Robotics"
-            className="enter rounded-t-xl border border-b-0 border-border bg-background shadow-card enter-4"
+        <section
+            aria-label={`${VENTURE.name}, ${faceLabel}`}
+            inert={isHidden}
+            className={cn(
+                'col-start-1 row-start-1 flex flex-col overflow-hidden rounded-xl border border-border bg-background shadow-card backface-hidden',
+                isInvestorView && 'rotate-y-180',
+            )}
         >
             <div className="flex items-center justify-between gap-4 border-b border-rule px-5 py-3 font-mono text-xs text-muted-foreground">
                 <span className="flex items-center gap-2 text-foreground">
                     <BrandLogo mark className="size-4" />
-                    Northwind Robotics
+                    {VENTURE.name}
                 </span>
-                <span>Re-scored 2 days ago</span>
+                <span>{faceLabel}</span>
             </div>
-            <div className="grid gap-8 p-5 sm:grid-cols-[auto_1fr] sm:gap-10 sm:p-6">
-                <div>
-                    <p className="text-sm text-muted-foreground">
-                        ScaleupMap Score
-                    </p>
-                    <p className="mt-2 flex items-baseline gap-2">
-                        <span className="score text-7xl sm:text-8xl">
-                            {score}
-                        </span>
-                        <span className="text-muted-foreground">of 100</span>
-                    </p>
-                    <p className="mt-3 text-sm font-medium text-brand">
-                        Up 6 since last month
-                    </p>
+
+            <div className="flex flex-1 flex-col gap-6 p-5 sm:p-6">
+                <div className="flex items-start justify-between gap-4">
+                    <div>
+                        <p className="text-sm text-muted-foreground">
+                            {VENTURE.stage}
+                        </p>
+                        <p className="mt-2 text-lg font-medium text-balance">
+                            {VENTURE.pitch}
+                        </p>
+                    </div>
+                    {isInvestorView && (
+                        <p className="shrink-0 text-right">
+                            <span className="score text-6xl sm:text-7xl">
+                                {score}
+                            </span>
+                            <span className="block font-mono text-xs text-muted-foreground">
+                                of 100
+                            </span>
+                        </p>
+                    )}
                 </div>
-                <ul className="flex flex-col justify-center gap-4">
-                    {GAP_SCORES.map((gap) => (
-                        <li key={gap.label} className="text-sm">
-                            <div className="flex justify-between">
-                                <span className="font-medium">{gap.label}</span>
-                                <span className="font-mono text-xs text-muted-foreground tabular-nums">
-                                    {gap.points} / {gap.max}
-                                </span>
-                            </div>
-                            <div className="mt-1.5 h-1.5 w-full rounded-sm bg-subtle">
-                                <div
-                                    className="h-full rounded-sm bg-brand transition-[width] duration-700 ease-out"
-                                    style={{
-                                        width: `${Math.round((gap.points / gap.max) * 100)}%`,
-                                    }}
+
+                <dl className="divide-y divide-rule border-y border-rule">
+                    {PROFILE_ROWS.map((row) => (
+                        <div key={row.key} className="relative py-4 pr-10">
+                            <dt className="text-sm text-muted-foreground">
+                                {row.label}
+                            </dt>
+                            <dd className="mt-1 font-medium">{row.value}</dd>
+                            {isInvestorView && (
+                                <FlagMarker
+                                    flag={row}
+                                    isOpen={openFlag === row.key}
+                                    onOpen={onOpenFlag}
                                 />
-                            </div>
-                        </li>
+                            )}
+                        </div>
                     ))}
-                </ul>
+                </dl>
+
+                {isInvestorView && (
+                    <div
+                        id={GAP_DETAIL_ID}
+                        aria-live="polite"
+                        className="mt-auto min-h-24 text-sm"
+                    >
+                        <GapDetail
+                            row={PROFILE_ROWS.find(
+                                (row) => row.key === openFlag,
+                            )}
+                        />
+                    </div>
+                )}
             </div>
-            <div className="flex items-center justify-between border-t border-rule px-5 py-4 text-sm sm:px-6">
-                <span className="text-muted-foreground">Next up</span>
-                <span className="flex items-center gap-2 font-medium">
-                    Investment memo
-                    <ArrowRight weight="bold" className="size-4 text-brand" />
-                </span>
-            </div>
-        </div>
+
+            {!isInvestorView && (
+                <div className="flex items-center justify-between border-t border-rule px-5 py-4 text-sm sm:px-6">
+                    <span className="text-muted-foreground">Next up</span>
+                    <span className="flex items-center gap-2 font-medium">
+                        Investment memo
+                        <ArrowRight
+                            weight="bold"
+                            className="size-4 text-brand"
+                        />
+                    </span>
+                </div>
+            )}
+        </section>
     );
 }
 
-/** Counts from 0 to the target once on mount, ease-out, about 900ms. Jumps straight to the target when the OS asks for reduced motion. */
-function useCountUp(target: number, durationMs = 900): number {
+type FlagMarkerProps = {
+    flag: ProfileRow;
+    isOpen: boolean;
+    onOpen: (flag: FlagKey | null) => void;
+};
+
+/** Hover or focus shows the gap, a click or tap pins it, Escape or leaving closes it. */
+function FlagMarker({ flag, isOpen, onOpen }: FlagMarkerProps) {
+    return (
+        <button
+            type="button"
+            aria-expanded={isOpen}
+            aria-controls={GAP_DETAIL_ID}
+            aria-label={`${flag.label} flag: ${flag.gap}`}
+            onMouseEnter={() => onOpen(flag.key)}
+            onMouseLeave={() => onOpen(null)}
+            onFocus={() => onOpen(flag.key)}
+            onBlur={() => onOpen(null)}
+            onClick={() => onOpen(flag.key)}
+            onKeyDown={(event) => {
+                if (event.key === 'Escape') {
+                    onOpen(null);
+                }
+            }}
+            className="absolute top-3 right-0 flex size-7 items-center justify-center rounded-lg bg-brand text-brand-foreground transition-colors duration-100 hover:bg-brand-hover"
+        >
+            <Flag weight="bold" className="size-4" />
+        </button>
+    );
+}
+
+function GapDetail({ row }: { row: ProfileRow | undefined }) {
+    if (!row) {
+        return (
+            <p className="text-muted-foreground">
+                Hover or tap a flag to see the gap an investor will name and the
+                question they will ask next.
+            </p>
+        );
+    }
+
+    return (
+        <>
+            <p className="font-medium text-brand">{row.gap}</p>
+            <p className="mt-1 text-muted-foreground">
+                An investor asks: {row.question}
+            </p>
+        </>
+    );
+}
+
+/** Counts from 0 to the target once each time isActive turns on, ease-out. Jumps to the target under reduced motion. */
+function useCountUp(target: number, isActive: boolean): number {
     const [value, setValue] = useState(0);
 
     useEffect(() => {
+        if (!isActive) {
+            return;
+        }
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             setValue(target);
             return;
         }
-        const start = performance.now();
+        const start = performance.now() + COUNT_DELAY_MS;
         let frame = requestAnimationFrame(function tick(now) {
-            const progress = Math.min(1, (now - start) / durationMs);
-            setValue(Math.round(target * (1 - Math.pow(1 - progress, 3))));
+            const progress = Math.min(
+                1,
+                Math.max(0, (now - start) / COUNT_DURATION_MS),
+            );
+            setValue(Math.round(target * (1 - (1 - progress) ** 3)));
             if (progress < 1) {
                 frame = requestAnimationFrame(tick);
             }
         });
         return () => cancelAnimationFrame(frame);
-    }, [target, durationMs]);
+    }, [target, isActive]);
 
     return value;
 }
