@@ -286,9 +286,9 @@ const LOGO_IMAGE_CLASS =
 const BOARD_PERSPECTIVE_CLASS = 'lg:perspective-[2000px]';
 const BOARD_PLANE_CLASS = 'lg:origin-top lg:transform-3d lg:rotate-x-[16deg]';
 // Feature demos sit on the same tilted plane as the tools board and settle flat on hover.
-const DEMO_PERSPECTIVE_CLASS = 'perspective-[1600px]';
+const DEMO_PERSPECTIVE_CLASS = 'perspective-[900px]';
 const DEMO_PLANE_CLASS =
-    'origin-top transform-3d rotate-x-[14deg] transition-transform duration-300 ease-entrance group-hover:rotate-x-0 motion-reduce:transition-none';
+    'origin-top transform-3d rotate-x-[20deg] transition-transform duration-300 ease-entrance group-hover:rotate-x-0 motion-reduce:transition-none';
 
 /** Horizontal centre of a tool tile on the board, as a percentage of the board width. */
 function toolCentrePercent(toolIndex: number): number {
@@ -600,9 +600,6 @@ export default function Welcome() {
                                                                 'lg:hidden lg:group-hover:block',
                                                         )}
                                                     >
-                                                        <span className="font-medium">
-                                                            First step.
-                                                        </span>{' '}
                                                         {tool.firstAction}
                                                     </p>
                                                 </li>
@@ -743,15 +740,14 @@ export default function Welcome() {
                                 </h2>
                                 <p className="mt-5 max-w-[42rem] text-lg text-muted-foreground">
                                     Three things you walk out with, all built
-                                    from the same answers. Every one is live
-                                    product UI, not a screenshot.
+                                    from the same answers.
                                 </p>
                             </div>
                             <ul className="grid border-t border-rule lg:grid-cols-3 lg:divide-x lg:divide-rule">
                                 {OUTCOMES.map((outcome) => (
                                     <li
                                         key={outcome.title}
-                                        className="group flex flex-col gap-8 border-b border-rule p-6 last:border-b-0 lg:border-b-0 lg:p-8"
+                                        className="group grid grid-rows-[auto_1fr] gap-8 border-b border-rule p-6 last:border-b-0 lg:row-span-2 lg:grid-rows-subgrid lg:border-b-0 lg:p-8"
                                     >
                                         <div>
                                             <h3 className="text-xl font-medium">
@@ -903,7 +899,7 @@ function DemoFrame({ children }: { children: ReactNode }) {
     return (
         <div
             className={cn(
-                'mt-auto rounded-xl bg-dot-grid p-4 pb-0 sm:p-6 sm:pb-0',
+                'self-start rounded-xl bg-dot-grid mask-b-from-70% p-4 pb-0 sm:p-6 sm:pb-0',
                 DEMO_PERSPECTIVE_CLASS,
             )}
         >
@@ -934,7 +930,7 @@ function DemoHeader({ title, meta }: { title: string; meta: string }) {
 function ScoreDemo() {
     return (
         <div aria-label="Score dashboard preview">
-            <DemoHeader title="ScaleupMap Score" meta="re-scored 2 min ago" />
+            <DemoHeader title="Score" meta="re-scored 2 min ago" />
             <div className="flex items-end justify-between gap-4 p-4">
                 <p>
                     <span className="score text-5xl">{SAMPLE_SCORE}</span>
