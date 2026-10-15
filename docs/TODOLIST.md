@@ -77,9 +77,11 @@ Rules from the craft floor: one primary action per screen, no group over 4 items
 
 ## 2. Sign-up and step 1 restate the promise
 
-**Open with:** "Read docs/TODOLIST.md task 2."
+**Open with:** "Read docs/TODOLIST.md task 2 and docs/branding/BRAND.md."
 
-Close the funnel. Same promise on landing, sign-up, and step 1.
+Close the funnel. Same promise on landing, sign-up, and step 1. The brand kit is done: tokens, `btn-ink`, `BrandLogo`. Use them, add no hex.
+
+- [ ] Auth layout (`resources/js/layouts/auth/*`, `resources/js/components/app-logo-icon.tsx`): swap the Laravel mark for `<BrandLogo mark className="size-10" />`
 
 - [ ] `resources/js/pages/auth/register.tsx`: title "Get your score. Takes 2 minutes." Subline "Step 1 of 4. Three questions follow." Keep the form fields as they are
 - [ ] Check `resources/js/layouts/auth/*` so the register page shows logo only, no marketing nav, no links except "Already have an account? Sign in"
