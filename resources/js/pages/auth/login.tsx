@@ -66,7 +66,6 @@ export default function Login({ status, canResetPassword }: Props) {
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
-                                    placeholder="Password"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -100,7 +99,10 @@ export default function Login({ status, canResetPassword }: Props) {
                                 className="inline-flex items-center gap-1"
                             >
                                 Get your score free
-                                <ArrowRight weight="bold" className="size-3.5" />
+                                <ArrowRight
+                                    weight="bold"
+                                    className="size-3.5"
+                                />
                             </TextLink>
                         </div>
                     </>

@@ -9,12 +9,13 @@ import {
     Flag,
     Lightning,
     MapTrifold,
+    Plus,
     Timer,
     UserCircle,
     UsersThree,
     type Icon,
 } from '@phosphor-icons/react';
-import type { KeyboardEvent } from 'react';
+import type { KeyboardEvent, ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import AppearanceToggleTab from '@/components/appearance-tabs';
 import { BrandLogo } from '@/components/brand-logo';
@@ -185,22 +186,61 @@ const STEPS = [
     },
 ];
 
-const OUTCOMES = [
+type DemoKey = 'score' | 'gaps' | 'memo';
+
+const OUTCOMES: { demo: DemoKey; title: string; text: string }[] = [
     {
+        demo: 'score',
         title: 'A score',
         text: 'One number out of 100 that moves as your venture does. Six months from raising or walking into a meeting tomorrow, it reflects your current state, not a stale snapshot.',
     },
     {
+        demo: 'gaps',
         title: 'Gaps, named',
         text: 'The 11 red flags VCs look for, in team, traction, market and fundability. You see them before you walk into the room.',
     },
     {
+        demo: 'memo',
         title: 'An investment memo',
         text: 'The memo and tearsheet investors ask for, written the way a fund analyst writes them, ready in 10 to 15 minutes. Includes the follow-up questions they will ask.',
     },
 ];
 
-// Real customers and backers from scaleupmap.com. Files in public/brand/logos.
+// Sample dimension scores for the score demo, same venture as the hero card.
+const DIMENSIONS = [
+    { label: 'Team', value: 58 },
+    { label: 'Traction', value: 64 },
+    { label: 'Market', value: 81 },
+    { label: 'Fundability', value: 42 },
+];
+
+// Memo demo shows section names with placeholder lines, so the document never goes stale.
+const MEMO_SECTIONS = [
+    { label: 'Problem', lines: ['w-full', 'w-11/12', 'w-2/3'] },
+    { label: 'Solution', lines: ['w-full', 'w-3/4'] },
+    { label: 'Traction', lines: ['w-10/12', 'w-1/2'] },
+];
+
+// The four questions a founder asks before signing up, per the landing page teardown.
+const FAQ = [
+    {
+        question: 'What do I need to upload?',
+        answer: 'A pitch deck or any company document. No deck yet? Answer the questions instead and the score still runs.',
+    },
+    {
+        question: 'How long does it take?',
+        answer: 'First score in under 2 minutes. The memo and tearsheet take 10 to 15 minutes more.',
+    },
+    {
+        question: 'Who sees my data?',
+        answer: 'You do. Your venture profile is private by default. You choose when to share a memo or send an application.',
+    },
+    {
+        question: 'Is my score shared with investors?',
+        answer: 'Not unless you apply. An investor on ScaleupMap sees your score only when you send them an application.',
+    },
+];
+
 // Real customers and backers from scaleupmap.com. Files in public/brand/logos.
 // scale lifts PNGs that ship with transparent padding so every mark reads at the same optical size.
 const CUSTOMERS: { name: string; file: string; scale?: number }[] = [
@@ -245,6 +285,10 @@ const LOGO_IMAGE_CLASS =
 
 const BOARD_PERSPECTIVE_CLASS = 'lg:perspective-[2000px]';
 const BOARD_PLANE_CLASS = 'lg:origin-top lg:transform-3d lg:rotate-x-[16deg]';
+// Feature demos sit on the same tilted plane as the tools board and settle flat on hover.
+const DEMO_PERSPECTIVE_CLASS = 'perspective-[1600px]';
+const DEMO_PLANE_CLASS =
+    'origin-top transform-3d rotate-x-[14deg] transition-transform duration-300 ease-entrance group-hover:rotate-x-0 motion-reduce:transition-none';
 
 /** Horizontal centre of a tool tile on the board, as a percentage of the board width. */
 function toolCentrePercent(toolIndex: number): number {
@@ -346,7 +390,7 @@ export default function Welcome() {
                                     Built for first-time founders. Get the score
                                     a VC analyst would give you, see the gaps
                                     they would flag, and fix them before you
-                                    pitch. First score in under 2 minutes.
+                                    pitch.
                                 </p>
                                 <div className="mt-8 flex enter flex-wrap gap-4 enter-3">
                                     <Link href={cta} className="btn-ink h-10">
@@ -497,9 +541,9 @@ export default function Welcome() {
                         </section>
 
                         <section className="px-6 pb-20">
-                            <p aria-live="polite" className="strip-label">
+                            <h2 aria-live="polite" className="strip-label">
                                 Tools for {activeStage.label}
-                            </p>
+                            </h2>
                             <div
                                 className={cn(
                                     'mt-6 rounded-2xl border border-rule bg-dot-grid p-4 sm:p-6 lg:p-12',
@@ -521,7 +565,7 @@ export default function Welcome() {
                                                         'group rounded-xl border bg-background p-5 transition-[translate,box-shadow,border-color,opacity] duration-200 motion-reduce:transition-none',
                                                         isRecommended
                                                             ? 'border-brand/40 shadow-card ring-1 ring-brand/10 lg:translate-z-10'
-                                                            : 'border-border lg:translate-z-0 lg:opacity-60 lg:hover:translate-z-6 lg:hover:opacity-100 lg:hover:shadow-card',
+                                                            : 'border-border lg:translate-z-0 lg:hover:translate-z-6 lg:hover:shadow-card',
                                                     )}
                                                 >
                                                     <div className="flex items-center justify-between gap-3">
@@ -692,25 +736,71 @@ export default function Welcome() {
                             </ol>
                         </section>
 
+                        <section className="border-t border-rule">
+                            <div className="px-6 pt-20 pb-12">
+                                <h2 className="text-3xl leading-tight font-medium tracking-[-0.02em] lg:text-[2.5rem]">
+                                    What you get
+                                </h2>
+                                <p className="mt-5 max-w-[42rem] text-lg text-muted-foreground">
+                                    Three things you walk out with, all built
+                                    from the same answers. Every one is live
+                                    product UI, not a screenshot.
+                                </p>
+                            </div>
+                            <ul className="grid border-t border-rule lg:grid-cols-3 lg:divide-x lg:divide-rule">
+                                {OUTCOMES.map((outcome) => (
+                                    <li
+                                        key={outcome.title}
+                                        className="group flex flex-col gap-8 border-b border-rule p-6 last:border-b-0 lg:border-b-0 lg:p-8"
+                                    >
+                                        <div>
+                                            <h3 className="text-xl font-medium">
+                                                {outcome.title}
+                                            </h3>
+                                            <p className="mt-2 text-muted-foreground">
+                                                {outcome.text}
+                                            </p>
+                                        </div>
+                                        <DemoFrame>
+                                            {outcome.demo === 'score' && (
+                                                <ScoreDemo />
+                                            )}
+                                            {outcome.demo === 'gaps' && (
+                                                <GapsDemo />
+                                            )}
+                                            {outcome.demo === 'memo' && (
+                                                <MemoDemo />
+                                            )}
+                                        </DemoFrame>
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+
                         <section className="border-t border-rule px-6 py-20">
                             <h2 className="text-3xl leading-tight font-medium tracking-[-0.02em] lg:text-[2.5rem]">
-                                What you get
+                                Before you sign up
                             </h2>
-                            <dl className="mt-12 max-w-3xl divide-y divide-rule border-y border-rule">
-                                {OUTCOMES.map((outcome) => (
-                                    <div
-                                        key={outcome.title}
-                                        className="grid gap-2 py-8 sm:grid-cols-[12rem_1fr]"
+                            <div className="mt-12 max-w-3xl divide-y divide-rule border-y border-rule">
+                                {FAQ.map((item) => (
+                                    <details
+                                        key={item.question}
+                                        className="group/faq"
                                     >
-                                        <dt className="text-xl font-medium">
-                                            {outcome.title}
-                                        </dt>
-                                        <dd className="text-lg text-muted-foreground">
-                                            {outcome.text}
-                                        </dd>
-                                    </div>
+                                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-lg font-medium transition-colors duration-100 hover:text-muted-foreground [&::-webkit-details-marker]:hidden">
+                                            {item.question}
+                                            <Plus
+                                                weight="bold"
+                                                aria-hidden="true"
+                                                className="size-4 shrink-0 text-brand transition-transform duration-200 group-open/faq:rotate-45"
+                                            />
+                                        </summary>
+                                        <p className="max-w-[42rem] pb-6 text-muted-foreground">
+                                            {item.answer}
+                                        </p>
+                                    </details>
                                 ))}
-                            </dl>
+                            </div>
                         </section>
 
                         <section className="border-t border-rule px-6 py-20">
@@ -805,6 +895,155 @@ export default function Welcome() {
                 </div>
             </div>
         </>
+    );
+}
+
+/** Tilted stage for a feature demo. The demo itself is live markup, so it never goes stale. */
+function DemoFrame({ children }: { children: ReactNode }) {
+    return (
+        <div
+            className={cn(
+                'mt-auto rounded-xl bg-dot-grid p-4 pb-0 sm:p-6 sm:pb-0',
+                DEMO_PERSPECTIVE_CLASS,
+            )}
+        >
+            <div
+                className={cn(
+                    'overflow-hidden rounded-t-lg border border-b-0 border-border bg-background shadow-card',
+                    DEMO_PLANE_CLASS,
+                )}
+            >
+                {children}
+            </div>
+        </div>
+    );
+}
+
+function DemoHeader({ title, meta }: { title: string; meta: string }) {
+    return (
+        <div className="flex items-center justify-between gap-4 border-b border-rule px-4 py-2.5 font-mono text-xs text-muted-foreground">
+            <span className="flex items-center gap-2 text-foreground">
+                <BrandLogo mark className="size-3.5" />
+                {title}
+            </span>
+            <span>{meta}</span>
+        </div>
+    );
+}
+
+function ScoreDemo() {
+    return (
+        <div aria-label="Score dashboard preview">
+            <DemoHeader title="ScaleupMap Score" meta="re-scored 2 min ago" />
+            <div className="flex items-end justify-between gap-4 p-4">
+                <p>
+                    <span className="score text-5xl">{SAMPLE_SCORE}</span>
+                    <span className="block font-mono text-xs text-muted-foreground">
+                        of 100
+                    </span>
+                </p>
+                <p className="rounded-md bg-navy-3 px-2 py-0.5 font-mono text-xs font-semibold text-brand">
+                    +6 this week
+                </p>
+            </div>
+            <dl className="flex flex-col gap-3 px-4 pb-4">
+                {DIMENSIONS.map((dimension) => (
+                    <div key={dimension.label}>
+                        <div className="flex justify-between text-xs">
+                            <dt className="text-muted-foreground">
+                                {dimension.label}
+                            </dt>
+                            <dd className="font-mono tabular-nums">
+                                {dimension.value}
+                            </dd>
+                        </div>
+                        <div
+                            aria-hidden="true"
+                            className="mt-1 h-1.5 rounded-full bg-subtle"
+                        >
+                            <div
+                                className="h-full rounded-full bg-brand"
+                                style={{ width: `${dimension.value}%` }}
+                            />
+                        </div>
+                    </div>
+                ))}
+            </dl>
+        </div>
+    );
+}
+
+function GapsDemo() {
+    return (
+        <div aria-label="Red flags preview">
+            <DemoHeader
+                title="Red flags"
+                meta={`${PROFILE_ROWS.length} of 11 raised`}
+            />
+            <ul className="divide-y divide-rule">
+                {PROFILE_ROWS.map((row) => (
+                    <li
+                        key={row.key}
+                        className="flex items-start gap-3 px-4 py-3"
+                    >
+                        <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md bg-brand text-brand-foreground">
+                            <Flag
+                                weight="bold"
+                                aria-hidden="true"
+                                className="size-3"
+                            />
+                        </span>
+                        <span className="min-w-0 text-sm">
+                            <span className="block font-medium">{row.gap}</span>
+                            <span className="block truncate text-xs text-muted-foreground">
+                                {row.label}: {row.value}
+                            </span>
+                        </span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+
+function MemoDemo() {
+    return (
+        <div aria-label="Investment memo preview">
+            <DemoHeader title="Investment memo" meta="draft, 12 min" />
+            <div className="p-4">
+                <p className="text-sm font-medium">{VENTURE.name}</p>
+                <p className="text-xs text-muted-foreground">{VENTURE.stage}</p>
+                <dl className="mt-4 flex flex-col gap-4">
+                    {MEMO_SECTIONS.map((section) => (
+                        <div key={section.label}>
+                            <dt className="font-mono text-xs text-brand uppercase">
+                                {section.label}
+                            </dt>
+                            <dd
+                                aria-hidden="true"
+                                className="mt-1.5 flex flex-col gap-1.5"
+                            >
+                                {section.lines.map((width) => (
+                                    <span
+                                        key={width}
+                                        className={cn(
+                                            'block h-2 rounded-full bg-subtle',
+                                            width,
+                                        )}
+                                    />
+                                ))}
+                            </dd>
+                        </div>
+                    ))}
+                </dl>
+                <div className="mt-4 border-t border-rule pt-3 text-xs">
+                    <p className="font-medium">Follow-up questions</p>
+                    <p className="mt-1 text-muted-foreground">
+                        {PROFILE_ROWS[0].question}
+                    </p>
+                </div>
+            </div>
+        </div>
     );
 }
 

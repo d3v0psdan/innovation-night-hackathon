@@ -66,7 +66,6 @@ export default function Register({ passwordRules }: Props) {
                                     tabIndex={3}
                                     autoComplete="new-password"
                                     name="password"
-                                    placeholder="Password"
                                     passwordrules={passwordRules}
                                 />
                                 <InputError message={errors.password} />
@@ -82,7 +81,6 @@ export default function Register({ passwordRules }: Props) {
                                     tabIndex={4}
                                     autoComplete="new-password"
                                     name="password_confirmation"
-                                    placeholder="Confirm password"
                                     passwordrules={passwordRules}
                                 />
                                 <InputError
@@ -132,7 +130,10 @@ export default function Register({ passwordRules }: Props) {
                                 className="inline-flex items-center gap-1"
                             >
                                 Sign in
-                                <ArrowRight weight="bold" className="size-3.5" />
+                                <ArrowRight
+                                    weight="bold"
+                                    className="size-3.5"
+                                />
                             </TextLink>
                         </div>
                     </>
