@@ -225,3 +225,38 @@
 @utility enter-4 {
     --delay: 300ms;
 }
+
+/* Logo marquee. Duplicate the list once for a seamless loop. Pauses on hover, off under reduced motion. */
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+@utility marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 45s linear infinite;
+
+    &:hover {
+        animation-play-state: paused;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        animation: none;
+    }
+}
+
+@utility marquee-mask {
+    mask-image: linear-gradient(
+        to right,
+        transparent,
+        black 6%,
+        black 94%,
+        transparent
+    );
+}

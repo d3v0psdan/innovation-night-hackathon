@@ -73,8 +73,8 @@ const BACKERS = [
     { name: 'Alberta Innovates', file: 'alberta-innovates.svg' },
     { name: 'Edmonton Unlimited', file: 'edmonton-unlimited.png' },
     {
-        name: 'Microsoft for Startups Founders Hub',
-        file: 'microsoft-for-startups.png',
+        name: 'Microsoft for Startups',
+        file: 'microsoft-for-startups.svg',
     },
     { name: 'Google for Startups', file: 'google-for-startups.png' },
 ];
@@ -201,27 +201,35 @@ export default function Welcome() {
                                 </li>
                             ))}
                         </ul>
-
-                        <ul
-                            aria-label="Founders at these companies scored first"
-                            className="grid grid-cols-2 border-b border-rule sm:grid-cols-3 lg:grid-cols-6"
-                        >
-                            <li className="flex items-center border-r border-b border-rule p-6 text-sm font-medium lg:border-b-0">
+                        <div className="flex flex-col border-b border-rule sm:flex-row">
+                            <p className="flex shrink-0 items-center border-b border-rule px-6 py-4 text-sm font-medium sm:w-56 sm:border-r sm:border-b-0 sm:py-0">
                                 Founders at these companies scored first
-                            </li>
-                            {CUSTOMERS.map((logo, index) => (
-                                <li
-                                    key={logo.name}
-                                    className={`flex h-24 items-center justify-center border-rule p-6 ${index < 5 ? 'border-b' : 'lg:border-b-0'} ${index % 2 === 0 ? 'border-r' : 'sm:border-r'} ${index % 6 === 4 ? 'lg:border-r-0' : 'lg:border-r'}`}
+                            </p>
+                            <div className="min-w-0 flex-1 overflow-hidden marquee-mask py-7">
+                                <ul
+                                    aria-label="Customer logos"
+                                    className="marquee items-center gap-16 pr-16"
                                 >
-                                    <img
-                                        src={`/brand/logos/${logo.file}`}
-                                        alt={logo.name}
-                                        className={LOGO_IMAGE_CLASS}
-                                    />
-                                </li>
-                            ))}
-                        </ul>
+                                    {[...CUSTOMERS, ...CUSTOMERS].map(
+                                        (logo, index) => (
+                                            <li
+                                                key={`${logo.name}-${index}`}
+                                                aria-hidden={
+                                                    index >= CUSTOMERS.length
+                                                }
+                                                className="flex h-10 shrink-0 items-center"
+                                            >
+                                                <img
+                                                    src={`/brand/logos/${logo.file}`}
+                                                    alt={logo.name}
+                                                    className={LOGO_IMAGE_CLASS}
+                                                />
+                                            </li>
+                                        ),
+                                    )}
+                                </ul>
+                            </div>
+                        </div>
 
                         <section className="px-6 py-20">
                             <h2 className="max-w-3xl text-3xl leading-tight font-medium tracking-[-0.02em] text-balance lg:text-[2.5rem]">
