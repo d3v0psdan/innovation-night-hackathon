@@ -783,7 +783,7 @@ export default function Welcome() {
                     </div>
 
                     <footer className="grid gap-8 border-t border-rule px-6 py-10 text-sm text-muted-foreground lg:grid-cols-[1fr_auto_auto] lg:items-center lg:gap-12">
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col items-start gap-4">
                             <BrandLogo className="h-6 w-auto" />
                             <p className="max-w-sm text-xs leading-relaxed">
                                 ScaleupMap Score is a trademark of ScaleupMap.
