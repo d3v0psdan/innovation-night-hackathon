@@ -16,8 +16,7 @@ export default defineConfig({
                 bunny('Instrument Sans', {
                     weights: [400, 500, 600],
                 }),
-                bunny('DM Sans', { weights: [400, 500, 600] }),
-                bunny('DM Serif Display', { weights: [400] }),
+                bunny('Geist Mono', { weights: [400, 500, 600] }),
             ],
         }),
         inertia(),

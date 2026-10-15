@@ -1,16 +1,227 @@
-/* ScaleupMap brand tokens. Source: brand/scaleupmap-platform-reference.md
-   Use as Tailwind utilities: bg-sm-primary, text-sm-title, font-sm-display, border-sm-primary/12 */
-@theme {
-    --color-sm-primary: #3160ae;
-    --color-sm-primary-hover: #254a8f;
-    --color-sm-accent: #4fbbea;
-    --color-sm-title: #1a365d;
-    --color-sm-headline: #1a2744;
-    --color-sm-body: #475569;
-    --color-sm-meta: #64748b;
-    --color-sm-canvas: #f1f5f9;
-    --color-sm-landing: #fafbfd;
-    --color-sm-card: #ffffff;
-    --font-sm-body: 'DM Sans', system-ui, sans-serif;
-    --font-sm-display: 'DM Serif Display', Georgia, serif;
+/* ScaleupMap brand kit. One source of truth for colour, type, radius, focus, selection and motion.
+   Read docs/branding/BRAND.md before styling anything.
+   Loads after laravel-cloud.css, so the :root and .dark blocks below win. Navy is the only accent on
+   a page. Sky #4FBBEA lives in the logo (resources/js/components/brand-logo.tsx) and nowhere else. */
+
+:root {
+    --brand: #3160ae;
+    --brand-hover: #284f90;
+    --brand-foreground: #ffffff;
+    --ring: #3160ae;
+    --sidebar-ring: #8aabdd;
+    --chart-1: #3160ae;
+    --destructive-foreground: #ffffff;
+
+    /* Ink: primary button fill and the strongest text. */
+    --ink: #111113;
+    /* Rule: the 1px grid line on marketing pages. Fainter than --border on purpose. */
+    --rule: #f0f0f3;
+    --selection: #d8e5f7;
+
+    /* Navy tints, light to dark. Chips, tracks, selection, widget fills. */
+    --navy-3: #eaf1fb;
+    --navy-4: #d8e5f7;
+    --navy-5: #c3d6f1;
+    --navy-6: #a9c3e9;
+    --navy-7: #8aabdd;
+    --navy-8: #6a92cf;
+    --navy-12: #0e2347;
+}
+
+.dark {
+    /* Navy lifted two steps so links and the score pass 4.5:1 on the dark surface. */
+    --brand: #8aabdd;
+    --brand-hover: #a9c3e9;
+    --brand-foreground: #111113;
+    --ring: #8aabdd;
+    --sidebar-ring: #3160ae;
+    --chart-1: #8aabdd;
+    --destructive-foreground: #111113;
+
+    --ink: #edeef0;
+    --rule: #2e3135;
+    --selection: #1d3d73;
+
+    --navy-3: #16233a;
+    --navy-4: #1d3d73;
+    --navy-5: #254a8f;
+    --navy-6: #3160ae;
+    --navy-7: #6a92cf;
+    --navy-8: #8aabdd;
+    --navy-12: #d8e5f7;
+}
+
+@theme inline {
+    --color-brand: var(--brand);
+    --color-brand-hover: var(--brand-hover);
+    --color-brand-foreground: var(--brand-foreground);
+    --color-ink: var(--ink);
+    --color-rule: var(--rule);
+    --color-selection: var(--selection);
+    --color-navy-3: var(--navy-3);
+    --color-navy-4: var(--navy-4);
+    --color-navy-5: var(--navy-5);
+    --color-navy-6: var(--navy-6);
+    --color-navy-7: var(--navy-7);
+    --color-navy-8: var(--navy-8);
+    --color-navy-12: var(--navy-12);
+
+    /* Legacy sm- names used by the onboarding and tool pages. Repointed at the kit so those pages inherit. */
+    --color-sm-primary: var(--brand);
+    --color-sm-primary-hover: var(--brand-hover);
+    --color-sm-title: var(--foreground);
+    --color-sm-headline: var(--foreground);
+    --color-sm-body: var(--muted-foreground);
+    --color-sm-meta: var(--muted-foreground);
+    --color-sm-canvas: var(--sheet);
+    --color-sm-landing: var(--background);
+    --color-sm-card: var(--card);
+    --font-sm-body: var(--font-sans);
+    --font-sm-display: var(--font-sans);
+
+    --ease-fast: cubic-bezier(0, 0, 0.2, 1);
+    --ease-entrance: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@layer base {
+    ::selection {
+        background: var(--selection);
+        color: var(--foreground);
+    }
+
+    h1,
+    h2,
+    h3 {
+        text-wrap: pretty;
+    }
+
+    /* Browser focus ring themed to the brand. Components with their own focus-visible classes win. */
+    :focus-visible {
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
+    }
+}
+
+/* Primary action. Ink fill, 6px radius, 100ms colour change. Set height in the markup (h-10 on the page, h-8 in a nav). */
+@utility btn-ink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(var(--spacing) * 2);
+    padding-inline: calc(var(--spacing) * 5);
+    border-radius: var(--radius-md);
+    background: var(--ink);
+    color: var(--background);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: var(--shadow-button);
+    transition:
+        background-color 100ms var(--ease-fast),
+        color 100ms var(--ease-fast);
+
+    &:hover {
+        background: color-mix(in oklab, var(--ink) 88%, var(--background));
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow:
+            var(--shadow-button),
+            0 0 0 4px color-mix(in oklab, var(--brand) 25%, transparent);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+}
+
+/* Secondary action. White fill, 16% navy edge, subtle hover. */
+@utility btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(var(--spacing) * 2);
+    padding-inline: calc(var(--spacing) * 5);
+    border-radius: var(--radius-md);
+    border: 1px solid color-mix(in oklab, var(--brand) 25%, transparent);
+    background: var(--background);
+    color: var(--foreground);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background-color 100ms var(--ease-fast);
+
+    &:hover {
+        background: var(--subtle);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand) 25%, transparent);
+    }
+}
+
+/* The score number. Mono, tabular, the one place navy is allowed as display text. */
+@utility score {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--brand);
+}
+
+/* Section strip label: number in weak grey, label in navy mono caps. Only where order is the information. */
+@utility strip-number {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: -0.3px;
+    color: var(--muted-foreground);
+    opacity: 0.6;
+}
+
+@utility strip-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--brand);
+}
+
+/* One authored entrance. 32px rise, 4px blur, 600ms, staggered with enter-1 to enter-4. Nothing else moves. */
+@utility enter {
+    transition-property: opacity, translate, filter;
+    transition-duration: 600ms;
+    transition-timing-function: var(--ease-entrance);
+    transition-delay: var(--delay, 0ms);
+
+    @starting-style {
+        opacity: 0;
+        translate: 0 2rem;
+        filter: blur(4px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+}
+
+@utility enter-1 {
+    --delay: 50ms;
+}
+
+@utility enter-2 {
+    --delay: 100ms;
+}
+
+@utility enter-3 {
+    --delay: 200ms;
+}
+
+@utility enter-4 {
+    --delay: 300ms;
 }

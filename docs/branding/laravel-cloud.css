@@ -1,0 +1,1210 @@
+/* ==========================================================================
+   laravel-cloud.css
+   Design system lifted from cloud.laravel.com on 2026-10-14 (1536px viewport)
+   Every value below was read from the live stylesheet (app-CS2ILv7l.css,
+   Tailwind v4 + Radix Slate scale) or the computed DOM. Nothing is guessed.
+
+   Structure
+   1. Fonts
+   2. Tokens (colors, type, spacing, radius, shadows, easing)
+   3. Base and browser surfaces
+   4. Layout grid (the rules and gutters that make it feel built)
+   5. Type scale
+   6. Buttons
+   7. Nav
+   8. Section header strip (number + label + mono meta)
+   9. Feature grid and lead sentences
+   10. Logo strip
+   11. Tabs with progress indicator
+   12. Testimonial cells
+   13. FAQ rows
+   14. Hero texture (noise wash + dot mask)
+   15. SVG patterns (hatch, dots, lines)
+   16. Motion (entrance, marquee, keyframes)
+   17. Dark surface tokens (reference only)
+   18. ScaleupMap overrides (opt-in)
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. Fonts
+   Laravel self-hosts InstrumentSans (400 to 700 + italics, plus Condensed and
+   SemiCondensed cuts), Geist Mono (variable), Commit Mono (400/600/700) and
+   InterVariable. Google Fonts carries Instrument Sans and Geist Mono.
+   Commit Mono is not on Google Fonts, so Geist Mono stands in for it.
+   -------------------------------------------------------------------------- */
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Geist+Mono:wght@400..700&display=swap");
+
+/* Metric-matched fallback so nothing jumps while the webfont loads */
+@font-face {
+  font-family: "Instrument Sans Fallback";
+  src: local("Arial");
+  size-adjust: 98%;
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. Tokens
+   -------------------------------------------------------------------------- */
+:root {
+  /* Families */
+  --font-sans: "Instrument Sans", "Instrument Sans Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono-label: "Commit Mono", "Geist Mono", ui-monospace, monospace;
+
+  /* Radix Slate (light). Laravel aliases these as slate-light-N */
+  --slate-1: #fcfcfd;
+  --slate-2: #f9f9fb;
+  --slate-3: #f0f0f3;   /* the grid rule color on the whole page */
+  --slate-4: #e8e8ec;
+  --slate-5: #e0e1e6;
+  --slate-6: #d9d9e0;
+  --slate-7: #cdced6;
+  --slate-8: #b9bbc6;   /* section number, de-emphasised mono */
+  --slate-9: #8b8d98;   /* text-weak */
+  --slate-10: #80838d;
+  --slate-11: #60646c;  /* paragraphs and secondary copy */
+  --slate-12: #1c2024;  /* headings, strong, nav text */
+
+  /* Slate alpha (black with hue, used over tinted surfaces) */
+  --slate-a2: #00005506;
+  --slate-a3: #0000330f;
+  --slate-a4: #00002d17;
+  --slate-a5: #0009321f;
+  --slate-a6: #00002f26;
+  --slate-a7: #00062e32;
+  --slate-a8: #00083046;
+  --slate-a9: #00051d74;
+  --slate-a11: #0007149f;
+
+  /* Cloud blue (their product accent, "bg-cloud") */
+  --cloud: #0057ff;
+  --cloud-3: #e9f3ff;
+  --cloud-4: #d9ebff;
+  --cloud-5: #c7e1ff;
+  --cloud-6: #b2d4ff;
+  --cloud-7: #98c1ff;
+  --cloud-8: #71a8ff;
+  --cloud-9: #006aff;
+  --cloud-10: #005cec;
+  --cloud-11: #0060f0;
+  --cloud-12: #082e6d;
+  --cloud-a3: #0074ff16;
+  --cloud-a4: #0079ff26;
+  --cloud-a10: #005cec;
+  --cloud-track: #cadbfd;        /* tab progress track */
+  --cloud-banner: #002a80;       /* top announcement bar */
+
+  /* Brand */
+  --laravel-red: #f53003;        /* only on the Laravel wordmark and progress bar */
+
+  /* Semantic */
+  --white: #ffffff;
+  --ink: #111113;                /* primary button fill (slate-dark-1) */
+  --text-strong: #11181c;        /* h2, logo caption, names */
+  --text-heading: #1c2024;       /* h1 and body strong (slate-12) */
+  --text-default: #687076;       /* FAQ questions, meta */
+  --text-body: #60646c;          /* paragraphs (slate-11) */
+  --text-weak: #8b8d98;
+  --rule: #f0f0f3;               /* every grid line (slate-3) */
+  --border: #00000018;           /* nav bottom border, 9% black */
+  --border-strong: #001a3329;    /* secondary button edge, 16% navy */
+  --bg: #ffffff;
+  --bg-hover: #f0f0f3;
+  --bg-stronger: #111113;
+  --active: #0000000c;
+
+  /* Type scale (Tailwind defaults they actually use) */
+  --text-xs: 0.75rem;     /* 12px  mono meta, footer links */
+  --text-sm: 0.875rem;    /* 14px  buttons, tabs, names, logo caption */
+  --text-base: 1rem;      /* 16px  body, FAQ, quotes */
+  --text-lg: 1.125rem;    /* 18px  hero paragraph, feature leads */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-4xl: 2.25rem;    /* 36px  h1 mobile */
+  --text-5xl: 3rem;       /* 48px  h1 tablet */
+  --text-6xl: 3.75rem;    /* 60px  h1 desktop */
+  --text-h2: 2.5rem;      /* 40px  every section h2 */
+  --text-h2-sm: 2rem;     /* 32px  h2 inside dark panel */
+
+  --leading-h1: 1;
+  --leading-h2: 1.3;      /* 52px on 40px */
+  --leading-body: 1.5;
+
+  --tracking-heading: -0.02em;          /* h2, feature leads */
+  --tracking-heading-tighter: -0.05em;  /* h1 only */
+  --tracking-mono: -0.3px;
+
+  --weight-body: 400;
+  --weight-medium: 500;   /* every heading, button and lead is 500. Nothing is bold */
+  --weight-semibold: 600; /* mono section labels only */
+
+  /* Spacing. Base 4px, used as 8/12/16/24/32/40/48/64/80/120 */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-30: 7.5rem;     /* hero top padding (sm:pt-30) */
+
+  --container: 80rem;     /* 1280px, content between the two vertical rules */
+  --inner-gutter: 0rem;   /* 1.5rem at sm, 2.5rem at md */
+  --padding-x: 1.5rem;    /* 3rem at md, 4rem at xl */
+
+  /* Radius. Two live values plus one for the demo frame */
+  --radius-sm: 0.25rem;   /* 4px   FAQ button */
+  --radius-md: 0.375rem;  /* 6px   every button and input */
+  --radius-lg: 0.5rem;    /* 8px   nav link hover, small cards */
+  --radius-2xl: 1rem;     /* 16px  the big product demo frame (top corners) */
+
+  /* Shadows. All of them, from the stylesheet */
+  --shadow-xs: 0 0 1px 0 #00000008, 0 1px 2px 0 #0000000f;
+  --shadow-xs-selected: 0 0 0 3px var(--cloud-a4), 0 0 0 1px var(--cloud-a10), 0 1px 3px 0 #0000001a, 0 1px 2px 0 #0000000f;
+  --shadow-sm: 0 1px 3px 0 #0000001a, 0 1px 2px -1px #0000001a;
+  --shadow-ring: 0 0 0 1px #0002;
+  --shadow-ring-soft: 0 0 0 1px #0002, 0 0 1px 0 #00000008, 0 1px 2px 0 #0000000f;
+  --shadow-card: 0 1px 2px -1px #00000019, 0 1px 3px 0 #00000019;
+  --shadow-float: 0 10px 40px 0 #0000001a;
+  --shadow-glow: 0 0 60px #00000026;
+  --shadow-2xl: 0 25px 50px -12px #00000040;
+  --shadow-inset-hairline: 0 0 1.5px .5px #0001 inset;
+  --shadow-inset-highlight: inset 0 1px #ffffff26;   /* top edge sheen on primary button */
+  --shadow-focus-brand: 0 0 0 2px var(--white), 0 0 0 4px var(--laravel-red);
+  --shadow-red-glow: 0 0 44px 0 #f5300380, 0 0 8px 0 #f5300380;
+  --shadow-stack: 0 10px 13px #00000026, 0 17px 17px #00000021, 0 28px 20px #00000014, 0 44px 22px #00000005, 0 0 0 1px #01213921;
+
+  /* Easing and timing */
+  --ease-out: cubic-bezier(0, 0, .2, 1);
+  --ease-in-out: cubic-bezier(.4, 0, .2, 1);
+  --ease-entrance: cubic-bezier(.22, .61, .36, 1);
+  --duration-fast: 100ms;     /* button and tab color changes */
+  --duration-base: 150ms;     /* nav background */
+  --duration-reveal: 300ms;   /* opacity on demo frames */
+  --duration-entrance: 600ms; /* hero entrance */
+
+  /* Patterns */
+  --grid-color: var(--slate-3);
+  --dot-color: #0000001a;      /* text-black/10 behind widgets */
+}
+
+
+/* --------------------------------------------------------------------------
+   3. Base and browser surfaces
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text-heading);
+  font-weight: var(--weight-body);
+}
+
+::selection {
+  background: var(--cloud-4);
+  color: var(--text-heading);
+}
+
+:focus { outline: none; }
+:focus-visible { box-shadow: var(--shadow-xs-selected); border-radius: var(--radius-md); }
+
+a { color: inherit; text-decoration: none; }
+a.link { color: var(--cloud); font-weight: var(--weight-medium); }
+a.link:hover { color: var(--cloud-10); }
+
+strong { font-weight: var(--weight-medium); color: var(--text-heading); }
+
+code, kbd, .mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+img, svg { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+
+/* --------------------------------------------------------------------------
+   4. Layout grid
+   A 1280px container with a 1px rule on each side, plus an inner gutter
+   column (0 / 24px / 40px) that also carries the rule. Sections stack with
+   border-top and border-bottom in the same color. No background bands.
+   -------------------------------------------------------------------------- */
+.lc-container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+}
+
+@media (min-width: 80rem) {
+  .lc-container { border-inline: 1px solid var(--grid-color); }
+}
+
+.lc-section {
+  position: relative;
+  width: 100%;
+  border-top: 1px solid var(--grid-color);
+  border-bottom: 1px solid var(--grid-color);
+}
+
+/* A row inside a section: gutter | content | gutter */
+.lc-row { position: relative; display: flex; }
+
+.lc-gutter {
+  position: relative;
+  display: none;
+  flex-shrink: 0;
+  width: var(--inner-gutter);
+}
+
+.lc-content {
+  position: relative;
+  min-width: 0;
+  flex-grow: 1;
+}
+
+@media (min-width: 40rem) {
+  :root { --inner-gutter: 1.5rem; }
+  .lc-gutter { display: block; }
+  .lc-content { border-inline: 1px solid var(--grid-color); }
+}
+
+@media (min-width: 48rem) {
+  :root { --inner-gutter: 2.5rem; --padding-x: 3rem; }
+}
+
+@media (min-width: 80rem) {
+  :root { --padding-x: 4rem; }
+}
+
+/* Spacer rows (the empty 24px/40px bands between blocks) */
+.lc-spacer { height: var(--inner-gutter); min-height: 1.5rem; }
+
+/* Hero wrapper */
+.lc-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-16) var(--space-6) var(--space-12);
+}
+
+@media (min-width: 40rem) { .lc-hero { padding-top: var(--space-30); } }
+@media (min-width: 48rem) { .lc-hero { padding-bottom: var(--space-20); } }
+
+/* Section heading block (h2 + subtitle) */
+.lc-heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-16) var(--space-6);
+  border-bottom: 1px solid var(--grid-color);
+  font-weight: var(--weight-medium);
+}
+
+@media (min-width: 48rem) { .lc-heading { padding-inline: var(--space-12); } }
+@media (min-width: 64rem) { .lc-heading { padding: var(--space-20) var(--space-16) var(--space-16); } }
+
+
+/* --------------------------------------------------------------------------
+   5. Type scale
+   Six sizes in use. Weight 500 everywhere above body. Headings are centred
+   in the hero only and left-aligned in every section after it.
+   -------------------------------------------------------------------------- */
+h1, .lc-h1 {
+  margin: 0;
+  font-size: var(--text-4xl);
+  line-height: var(--leading-h1);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-heading-tighter);
+  color: var(--text-heading);
+  text-wrap: pretty;
+  text-align: center;
+}
+
+@media (min-width: 40rem) { h1, .lc-h1 { font-size: var(--text-5xl); } }
+@media (min-width: 64rem) { h1, .lc-h1 { font-size: var(--text-6xl); } }
+
+h2, .lc-h2 {
+  margin: 0;
+  font-size: var(--text-h2);
+  line-height: var(--leading-h2);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-heading);
+  color: var(--text-strong);
+  text-wrap: pretty;
+}
+
+.lc-h2--sm { font-size: var(--text-h2-sm); }
+
+/* Hero paragraph. 24px below h1, 32px above the buttons, 640px max */
+.lc-lede {
+  margin: var(--space-6) 0 0;
+  max-width: 640px;
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  font-weight: var(--weight-medium);
+  color: var(--text-body);
+  text-align: center;
+  text-wrap: pretty;
+}
+
+@media (min-width: 40rem) { .lc-lede { font-size: var(--text-lg); } }
+
+/* Section subtitle. First sentence strong, rest grey, 680px max */
+.lc-sub {
+  margin: 0;
+  max-width: 680px;
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  font-weight: var(--weight-medium);
+  color: var(--text-body);
+  text-wrap: pretty;
+}
+
+.lc-sub strong { color: var(--text-heading); font-weight: var(--weight-medium); }
+
+@media (min-width: 40rem) { .lc-sub { font-size: var(--text-lg); } }
+
+/* Mono label (13px, 600, uppercase). Section numbers and names */
+.lc-label {
+  font-family: var(--font-mono-label);
+  font-size: 13px;
+  line-height: 1;
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  color: var(--cloud);
+}
+
+.lc-label-muted {
+  font-family: var(--font-mono-label);
+  font-size: 13px;
+  line-height: 1;
+  font-weight: var(--weight-semibold);
+  color: var(--slate-8);
+  text-transform: lowercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Mono meta (12px, 500). Timestamps, counters, "UTC" */
+.lc-meta {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.333;
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-mono);
+  color: var(--text-heading);
+  font-variant-numeric: tabular-nums;
+}
+
+.lc-meta--weak { color: var(--text-default); }
+
+
+/* --------------------------------------------------------------------------
+   6. Buttons
+   Laravel's recipe. The element paints the border color, ::before paints the
+   fill one pixel inside, ::after holds a 1px white sheen and the hover tint.
+   40px tall / 20px side padding on the page, 32px / 16px in the nav.
+   -------------------------------------------------------------------------- */
+.lc-btn {
+  --btn-bg: var(--white);
+  --btn-border: var(--border-strong);
+  --btn-hover: var(--bg-hover);
+
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 2.5rem;
+  padding: 0 var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--btn-border);
+  font-size: var(--text-sm);
+  line-height: 1.43;
+  font-weight: var(--weight-medium);
+  color: var(--text-strong);
+  white-space: nowrap;
+  text-align: center;
+  user-select: none;
+  transition: color var(--duration-fast) var(--ease-in-out),
+              background-color var(--duration-fast) var(--ease-in-out),
+              border-color var(--duration-fast) var(--ease-in-out);
+}
+
+.lc-btn::before,
+.lc-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: calc(var(--radius-md) - 1px);
+}
+
+.lc-btn::before { background: var(--btn-bg); box-shadow: var(--shadow-xs); }
+.lc-btn::after { box-shadow: var(--shadow-inset-highlight); }
+.lc-btn:hover:not(:disabled)::after { background: var(--btn-hover); }
+
+.lc-btn:focus-visible { box-shadow: var(--shadow-xs-selected); }
+
+.lc-btn:disabled {
+  --btn-bg: #fbfcfd;
+  color: #8f8f8f;
+  cursor: default;
+}
+.lc-btn:disabled::before, .lc-btn:disabled::after { box-shadow: none; }
+
+/* Primary. Ink fill, white text, 10% white hover overlay */
+.lc-btn--primary {
+  --btn-bg: var(--bg-stronger);
+  --btn-border: var(--bg-stronger);
+  --btn-hover: color-mix(in oklab, #fff 10%, transparent);
+  color: var(--white);
+}
+
+/* Cloud blue. Used inside product demos, never on the marketing page */
+.lc-btn--cloud {
+  --btn-bg: var(--cloud);
+  --btn-border: var(--cloud);
+  --btn-hover: color-mix(in oklab, #fff 10%, transparent);
+  color: var(--white);
+}
+
+/* Ghost. Transparent until hover, 1px border */
+.lc-btn--ghost {
+  --btn-bg: transparent;
+  --btn-border: var(--border);
+}
+
+/* Sizes */
+.lc-btn--sm { height: 2rem; padding-inline: var(--space-4); }
+
+/* Arrow glyph on the primary CTA */
+.lc-btn svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+.lc-btn .lc-arrow { transition: translate var(--duration-fast) var(--ease-out); }
+.lc-btn:hover .lc-arrow { translate: 2px 0; }
+
+/* Button row in the hero. 24px between buttons */
+.lc-actions { display: flex; gap: var(--space-6); margin-top: var(--space-8); }
+
+
+/* --------------------------------------------------------------------------
+   7. Nav
+   64px sticky bar, white at 80% with 8px blur, 9% black bottom rule.
+   Links 15px/500, 36px tall, 8px radius on hover.
+   -------------------------------------------------------------------------- */
+.lc-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+}
+
+.lc-nav__bar {
+  display: flex;
+  align-items: center;
+  height: 4rem;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in oklab, var(--white) 80%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background-color var(--duration-base) var(--ease-out);
+}
+
+.lc-nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+.lc-nav__links { display: flex; align-items: center; height: 100%; }
+
+.lc-nav__link {
+  display: inline-flex;
+  align-items: center;
+  height: 2.25rem;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-lg);
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  color: var(--text-heading);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.lc-nav__link:hover { background: var(--active); }
+
+.lc-nav__divider {
+  width: 1px;
+  height: 100%;
+  background: var(--border);
+  margin-inline: var(--space-4);
+}
+
+.lc-nav__cta { display: flex; align-items: center; gap: var(--space-2); }
+
+/* Announcement bar above the nav. 44px, deep navy, mono countdown chip */
+.lc-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  height: 2.75rem;
+  background: var(--cloud-banner);
+  color: var(--white);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.lc-banner__chip {
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background: #ffffff1a;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* --------------------------------------------------------------------------
+   8. Section header strip
+   40px row. Number in slate-8, label in cloud blue, a lowercase mono
+   commit message on the right, a hatched square in the right gutter.
+   -------------------------------------------------------------------------- */
+.lc-strip {
+  position: relative;
+  display: flex;
+  border-bottom: 1px solid var(--grid-color);
+  font-family: var(--font-mono-label);
+  font-size: 13px;
+  line-height: 1;
+  font-weight: var(--weight-semibold);
+  color: var(--slate-8);
+}
+
+.lc-strip__gutter {
+  position: relative;
+  display: none;
+  flex-shrink: 0;
+  width: var(--inner-gutter);
+}
+
+.lc-strip__gutter--num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--inner-gutter);
+  min-width: 2.5rem;
+}
+
+.lc-strip__body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  min-width: 0;
+  flex-grow: 1;
+  height: 2.5rem;
+  padding-inline: var(--space-4);
+}
+
+@media (min-width: 40rem) {
+  .lc-strip__gutter { display: block; }
+  .lc-strip__body { border-inline: 1px solid var(--grid-color); }
+}
+@media (min-width: 48rem) { .lc-strip__body { padding-inline: var(--space-6); } }
+
+.lc-strip__label { color: var(--cloud); text-transform: uppercase; flex-shrink: 0; }
+
+/* Hatched gutter. 45deg lines, 5px pitch, 2px stroke, grid color */
+.lc-hatch {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: var(--grid-color);
+  background-image: repeating-linear-gradient(45deg, currentColor 0 2px, transparent 2px 5px);
+}
+
+
+/* --------------------------------------------------------------------------
+   9. Feature grid and lead sentences
+   Equal cells divided by 1px rules. Each cell is a lead sentence (strong
+   then grey) and a live widget below it. No icons, no card shadows.
+   -------------------------------------------------------------------------- */
+.lc-features {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 48rem) { .lc-features { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 64rem) { .lc-features--3 { grid-template-columns: repeat(3, 1fr); } }
+
+.lc-feature {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 500px;
+  background: var(--white);
+  border-top: 1px solid var(--grid-color);
+  overflow: hidden;
+}
+
+@media (min-width: 48rem) {
+  .lc-feature + .lc-feature { border-left: 1px solid var(--grid-color); }
+}
+
+.lc-feature__lead {
+  padding: var(--space-8) var(--padding-x) 0;
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-heading);
+  color: var(--text-body);
+}
+
+.lc-feature__lead strong { color: var(--text-heading); font-weight: var(--weight-medium); }
+
+@media (min-width: 40rem) { .lc-feature__lead { font-size: var(--text-lg); } }
+@media (min-width: 48rem) { .lc-feature__lead { padding-top: var(--space-12); padding-right: calc(var(--padding-x) * .75); } }
+@media (min-width: 80rem) { .lc-feature__lead { padding-top: var(--space-16); } }
+
+/* Widget area under the lead, dotted background */
+.lc-feature__widget {
+  position: relative;
+  flex-grow: 1;
+  margin: 0 var(--space-6);
+  padding: var(--space-8) 0;
+}
+
+/* Check list on dark surfaces (16px/500, light slate text, cloud-8 ticks) */
+.lc-checks { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-3); }
+.lc-checks li { display: flex; gap: var(--space-3); font-size: var(--text-base); font-weight: var(--weight-medium); color: #a1afc5; }
+.lc-checks svg { width: 1rem; height: 1rem; color: var(--cloud-8); flex-shrink: 0; margin-top: 4px; }
+
+
+/* --------------------------------------------------------------------------
+   10. Logo strip
+   Grid with 1px gaps painted by the parent background. Caption in cell one.
+   Cells are 120px tall, 24px side padding, logos in black.
+   -------------------------------------------------------------------------- */
+.lc-logos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--grid-color);
+}
+
+@media (min-width: 40rem) { .lc-logos { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 64rem) { .lc-logos { grid-template-columns: repeat(5, 1fr); } }
+
+.lc-logos__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 7.5rem;
+  padding: 0 var(--space-6);
+  background: var(--white);
+}
+
+.lc-logos__caption {
+  justify-content: flex-start;
+  font-size: var(--text-sm);
+  line-height: 1.43;
+  font-weight: var(--weight-medium);
+  color: var(--text-strong);
+}
+
+.lc-logos__cell img, .lc-logos__cell svg { height: 1.75rem; width: auto; color: var(--text-heading); }
+
+
+/* --------------------------------------------------------------------------
+   11. Tabs with progress indicator
+   Three equal cells, 14px/500, 20px/24px padding. The active tab shows a
+   2px track (#cadbfd) with a cloud-blue fill that scales from the left
+   over the auto-advance interval.
+   -------------------------------------------------------------------------- */
+.lc-tabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  min-width: 0;
+  background: #ffffff33;
+}
+
+.lc-tabs > * + * { border-left: 1px solid var(--grid-color); }
+
+.lc-tab {
+  position: relative;
+  padding: var(--space-5) var(--space-6);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  font-weight: var(--weight-medium);
+  color: var(--text-heading);
+  text-align: left;
+  user-select: none;
+}
+
+.lc-tab:focus-visible { box-shadow: var(--shadow-xs-selected); }
+
+.lc-tab__track {
+  position: absolute;
+  inset: auto 0 -1px;
+  height: 2px;
+  overflow: hidden;
+  background: var(--cloud-track);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.lc-tab[aria-selected="true"] .lc-tab__track { transform: scaleX(1); }
+
+.lc-tab__fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--cloud);
+  transform-origin: left;
+  animation: progressBar var(--tab-interval, 8s) linear forwards;
+}
+
+/* The product frame under the tabs. 16px top radius, bottom fades out */
+.lc-frame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  mask-image: linear-gradient(to bottom, #000 80%, transparent);
+}
+
+@media (min-width: 40rem) { .lc-frame { border-radius: var(--radius-2xl) var(--radius-2xl) 0 0; } }
+
+.lc-frame__pad { padding: var(--space-3); }
+@media (min-width: 40rem) { .lc-frame__pad { padding: var(--space-6); } }
+
+
+/* --------------------------------------------------------------------------
+   12. Testimonial cells
+   Marquee of equal cells, each with a 1px left rule. 16px/500 quote in
+   slate-12, 14px name in text-strong, handle in text-default.
+   -------------------------------------------------------------------------- */
+.lc-quotes {
+  container-type: inline-size;
+  overflow: hidden;
+}
+
+.lc-quotes__track {
+  display: flex;
+  width: max-content;
+  animation: infinite-scroll-x calc(10s * var(--items, 6)) linear infinite;
+}
+
+.lc-quotes:hover .lc-quotes__track { animation-play-state: paused; }
+
+.lc-quote {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-shrink: 0;
+  width: 100cqw;
+  padding: var(--space-10);
+  border-left: 1px solid var(--grid-color);
+  background: var(--white);
+}
+
+@media (min-width: 40rem) { .lc-quote { width: calc(100cqw / 2); } }
+@media (min-width: 64rem) { .lc-quote { width: calc(100cqw / 3); } }
+@media (min-width: 80rem) { .lc-quote { padding-inline: var(--space-16); padding-block: var(--space-12); } }
+
+.lc-quote blockquote {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  font-weight: var(--weight-medium);
+  color: var(--text-heading);
+}
+
+.lc-quote__who {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  line-height: 1;
+}
+
+.lc-quote__name { font-weight: var(--weight-medium); color: var(--text-strong); }
+.lc-quote__handle { margin-top: var(--space-2); color: var(--text-default); }
+.lc-quote__avatar { width: 2.5rem; height: 2.5rem; border-radius: var(--radius-md); object-fit: cover; }
+
+
+/* --------------------------------------------------------------------------
+   13. FAQ rows
+   Button rows, 16px/400 in text-default, hover to text-strong, 100ms.
+   Plus icon on the right. No card, no accordion chrome.
+   -------------------------------------------------------------------------- */
+.lc-faq { display: grid; gap: var(--space-1); }
+
+.lc-faq__q {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) 0;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  color: var(--text-default);
+  text-align: left;
+  transition: color var(--duration-fast) var(--ease-in-out);
+}
+
+.lc-faq__q:hover, .lc-faq__q[aria-expanded="true"] { color: var(--text-strong); }
+.lc-faq__q:focus-visible { box-shadow: var(--shadow-xs-selected); }
+.lc-faq__q svg { width: 1rem; height: 1rem; margin-top: 4px; flex-shrink: 0; transition: rotate var(--duration-fast) var(--ease-out); }
+.lc-faq__q[aria-expanded="true"] svg { rotate: 45deg; }
+
+.lc-faq__a {
+  padding: var(--space-2) 0 var(--space-4);
+  font-size: var(--text-base);
+  color: var(--text-body);
+  max-width: 65ch;
+}
+
+
+/* --------------------------------------------------------------------------
+   14. Hero texture
+   Two stacked SVGs. The first is a fractal-noise rect recoloured to a
+   blue wash and scrolled left over 6s. The second is a white dot mask
+   (9.5px pitch, 0.75px holes) laid on top. Together they read as a faint
+   blue bloom seen through a dotted paper grid.
+
+   Markup:
+   <div class="lc-hero-bg">
+     <svg class="lc-hero-bg__noise" aria-hidden="true">
+       <filter id="noise" x="0" y="0" width="100%" height="100%">
+         <feTurbulence type="fractalNoise" baseFrequency="0.004" stitchTiles="stitch" seed="1" result="noise"/>
+         <feColorMatrix in="noise" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1"/>
+         <feComponentTransfer>
+           <feFuncR type="table" tableValues="0.25 0.25 0.85 0.85 1"/>
+           <feFuncG type="table" tableValues="0.45 0.45 0.85 0.85 1"/>
+           <feFuncB type="table" tableValues="1 1 0.85 0.85 1"/>
+         </feComponentTransfer>
+       </filter>
+       <rect x="0" y="0" width="50%" height="100%" filter="url(#noise)"/>
+       <use href="#noiseRect" x="50%"/>
+     </svg>
+     <svg class="lc-hero-bg__dots" aria-hidden="true">
+       <defs>
+         <pattern id="dots" x="-3" y="-3" width="9.5" height="9.5" patternUnits="userSpaceOnUse">
+           <path fill="currentColor" fill-rule="evenodd"
+             d="M-1,-1 H10.5 V10.5 H-1 Z M2.5,1.75 A0.75,0.75 0 1,1 1,1.75 A0.75,0.75 0 1,1 2.5,1.75 Z"/>
+         </pattern>
+       </defs>
+       <rect fill="url(#dots)" width="100%" height="100%"/>
+     </svg>
+   </div>
+   -------------------------------------------------------------------------- */
+.lc-hero-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--white);
+  transition: opacity var(--duration-reveal) var(--ease-out);
+  pointer-events: none;
+}
+
+@starting-style { .lc-hero-bg { opacity: 0; } }
+
+.lc-hero-bg__noise {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  --scroll-x: -50%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lc-hero-bg__noise { animation: infinite-scroll-x 6s linear infinite; }
+}
+
+.lc-hero-bg__dots {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--white);
+}
+
+/* CSS-only stand-in if you skip the SVG. Softer, but zero markup */
+.lc-hero-bg--css {
+  background:
+    radial-gradient(circle at 25% 60%, #c7e1ff80 0, transparent 28%),
+    radial-gradient(circle at 70% 30%, #98c1ff66 0, transparent 26%),
+    var(--white);
+}
+.lc-hero-bg--css::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, transparent 0.75px, var(--white) 0.85px);
+  background-size: 9.5px 9.5px;
+  background-position: -3px -3px;
+}
+
+
+/* --------------------------------------------------------------------------
+   15. Patterns behind widgets
+   All of these are inline SVG <pattern> on the live site. CSS equivalents:
+   -------------------------------------------------------------------------- */
+
+/* Dot grid. 9.5px pitch, 1.5px rounded dots, 10% black */
+.lc-pattern-dots {
+  background-image: radial-gradient(circle, var(--dot-color) 0.75px, transparent 0.9px);
+  background-size: 9.5px 9.5px;
+  background-position: -2px -2px;
+}
+
+/* Vertical hairlines. 8px pitch, slate-alpha-3 */
+.lc-pattern-lines {
+  background-image: repeating-linear-gradient(90deg, var(--slate-a3) 0 1px, transparent 1px 8px);
+}
+
+/* Diagonal hairlines, -60deg, 7px pitch, slate-6 */
+.lc-pattern-diag {
+  background-image: repeating-linear-gradient(-60deg, var(--slate-6) 0 1px, transparent 1px 7px);
+}
+
+/* Dense cloud-blue stripes, 3px pitch, 2px stroke (progress and "active" fills) */
+.lc-pattern-stripe {
+  background-image: repeating-linear-gradient(90deg, var(--cloud-8) 0 2px, transparent 2px 3px);
+}
+
+
+/* --------------------------------------------------------------------------
+   16. Motion
+   One authored entrance. Elements start 32px down, blurred 4px, invisible,
+   then settle over 600ms on cubic-bezier(.22,.61,.36,1). Stagger with
+   --delay. Everything else is a 100ms color change.
+   -------------------------------------------------------------------------- */
+.lc-enter {
+  will-change: transform;
+  transition-property: opacity, translate, filter;
+  transition-duration: var(--duration-entrance);
+  transition-timing-function: var(--ease-entrance);
+  transition-delay: var(--delay, 0ms);
+}
+
+@starting-style {
+  .lc-enter {
+    opacity: 0;
+    translate: 0 2rem;
+    filter: blur(4px);
+  }
+}
+
+/* Stagger values used on the hero: 50ms h1, 100ms lede, 200ms buttons, 300ms frame */
+.lc-enter--1 { --delay: 50ms; }
+.lc-enter--2 { --delay: 100ms; }
+.lc-enter--3 { --delay: 200ms; }
+.lc-enter--4 { --delay: 300ms; }
+
+/* Fade for demo frames and lazy widgets */
+.lc-reveal { transition: opacity var(--duration-reveal) var(--ease-out); }
+@starting-style { .lc-reveal { opacity: 0; } }
+
+/* Marquee. Set --items to the number of cards */
+.lc-marquee {
+  display: flex;
+  width: max-content;
+  animation: infinite-scroll-x calc(10s * var(--items, 6)) linear infinite;
+}
+
+@keyframes infinite-scroll-x {
+  from { transform: translate(0); }
+  to   { transform: translate(var(--scroll-x, -100%)); }
+}
+
+@keyframes progressBar {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
+
+@keyframes nw-blur-up {
+  from { opacity: 0; filter: blur(12px); transform: translateY(16px); }
+  to   { opacity: 1; filter: blur(0);  transform: translateY(0); }
+}
+
+@keyframes nw-blur-down {
+  from { opacity: 0; filter: blur(12px); transform: translateY(-16px); }
+  to   { opacity: 1; filter: blur(0);  transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  0%   { opacity: 0; transform: translate(100%); }
+  40%  { opacity: 0; }
+  100% { opacity: 1; transform: translate(0); }
+}
+
+@keyframes slide-out-up {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-100%); }
+}
+
+/* Dropdown menus (Radix style) */
+@keyframes nav-scale-in {
+  from { opacity: 0; transform: rotateX(-8deg) scale(.96); }
+  to   { opacity: 1; transform: rotateX(0) scale(1); }
+}
+@keyframes nav-scale-out {
+  from { opacity: 1; transform: rotateX(0) scale(1); }
+  to   { opacity: 0; transform: rotateX(-8deg) scale(.96); }
+}
+@keyframes nav-enter-from-right { from { opacity: 0; transform: translate(200px); } to { opacity: 1; transform: translate(0); } }
+@keyframes nav-enter-from-left  { from { opacity: 0; transform: translate(-200px); } to { opacity: 1; transform: translate(0); } }
+@keyframes nav-exit-to-right    { from { opacity: 1; transform: translate(0); } to { opacity: 0; transform: translate(200px); } }
+@keyframes nav-exit-to-left     { from { opacity: 1; transform: translate(0); } to { opacity: 0; transform: translate(-200px); } }
+@keyframes nav-slide-up-and-fade { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
+
+.lc-menu-in  { animation: nav-scale-in .2s ease; transform-origin: top; }
+.lc-menu-out { animation: nav-scale-out .2s ease; transform-origin: top; }
+.lc-tip-in   { animation: nav-slide-up-and-fade 50ms ease-out; }
+
+/* Widget helpers */
+@keyframes float {
+  from { transform: translate(0) translateY(0); }
+  to   { transform: translate(var(--float-offset-x, 0)) translateY(var(--float-offset-y, -4px)); }
+}
+@keyframes dashes { from { stroke-dashoffset: 0; } to { stroke-dashoffset: var(--dash-offset, 100%); } }
+@keyframes spin  { to { transform: rotate(360deg); } }
+@keyframes pulse { 50% { opacity: .5; } }
+@keyframes ping {
+  0%   { scale: var(--from-scale, 0); opacity: var(--from-opacity, 0); }
+  50%  { opacity: var(--to-opacity, 1); }
+  100% { scale: var(--to-scale, 1); opacity: var(--from-opacity, 0); }
+}
+
+.lc-float { animation: float 2s var(--ease-in-out) infinite alternate; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lc-enter, .lc-reveal { transition: none; }
+  .lc-marquee, .lc-quotes__track, .lc-hero-bg__noise, .lc-float, .lc-tab__fill { animation: none; }
+}
+
+
+/* --------------------------------------------------------------------------
+   17. Dark surface tokens (reference only)
+   Their private cloud panel and footer. #01000f base, slate-dark text.
+   ScaleupMap stays light end to end, so this block is here for completeness
+   and for the enterprise panel if you ever want one.
+   -------------------------------------------------------------------------- */
+.lc-dark {
+  --bg: #01000f;
+  --rule: #ddffab24;
+  --border: #ddffab24;
+  --text-heading: #e8e8ec;
+  --text-strong: #edeef0;
+  --text-body: #b0b4ba;
+  --text-default: #6f6f91;
+  --slate-dark-1: #111113;
+  --slate-dark-2: #18191b;
+  --slate-dark-3: #212225;
+  --slate-dark-4: #272a2d;
+  --slate-dark-5: #2e3135;
+  --slate-dark-6: #363a3f;
+  --slate-dark-7: #43484e;
+  --slate-dark-8: #5a6169;
+  --slate-dark-9: #696e77;
+  --slate-dark-10: #777b84;
+  --slate-dark-11: #b0b4ba;
+  --slate-dark-12: #edeef0;
+  --dark-600: #252a37;
+  --dark-700: #171923;
+  --grid-color: var(--rule);
+  --active: #ffffff11;
+
+  background: var(--bg);
+  color: var(--text-body);
+}
+
+.lc-dark h2 { color: var(--text-heading); }
+.lc-dark .lc-h2 span { color: #a1afc5; }   /* second line of the dark h2 is a lighter slate */
+.lc-dark .lc-btn--primary { --btn-bg: var(--white); --btn-border: #001a3329; --btn-hover: #f0f0f3; color: #11181c; }
+.lc-dark .lc-btn { --btn-bg: transparent; --btn-border: #ffffff1f; color: var(--white); --btn-hover: #ffffff11; }
+
+
+/* --------------------------------------------------------------------------
+   18. ScaleupMap overrides (opt-in)
+   Add class "sum" to <html> to swap Laravel's cloud blue for ScaleupMap navy
+   and keep everything else. The sky #4FBBEA is intentionally absent.
+   -------------------------------------------------------------------------- */
+.sum {
+  --cloud: #3160ae;
+  --cloud-10: #284f90;
+  --cloud-11: #2a5499;
+  --cloud-12: #0e2347;
+  --cloud-3: #eaf1fb;
+  --cloud-4: #d8e5f7;
+  --cloud-5: #c3d6f1;
+  --cloud-6: #a9c3e9;
+  --cloud-7: #8aabdd;
+  --cloud-8: #6a92cf;
+  --cloud-a4: #3160ae26;
+  --cloud-a10: #3160ae;
+  --cloud-track: #c3d6f1;
+  --cloud-banner: #1d3d73;
+  --laravel-red: #3160ae;   /* progress bar and focus ring pick up navy too */
+}
+
+/* The score number. Mono, tabular, the one place navy is allowed as text */
+.sum .sum-score {
+  font-family: var(--font-mono);
+  font-size: var(--text-6xl);
+  line-height: 1;
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--cloud);
+}
+
+/* Weightier icon strokes, per Daniel's rule. 2px minimum, not 1.5 */
+.sum svg[stroke] { stroke-width: 2; }
