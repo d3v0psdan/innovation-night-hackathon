@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 Route::inertia('/', 'welcome')->name('home');
 
 // Landing page explorations for the hackathon pitch. One file each in resources/js/pages/variants.
-foreach ([1, 2, 3, 4, 5] as $variant) {
+foreach (range(1, 8) as $variant) {
     Route::inertia("v/{$variant}", "variants/landing-{$variant}")->name("landing.variant.{$variant}");
 }
 
