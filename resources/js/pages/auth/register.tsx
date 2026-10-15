@@ -66,7 +66,7 @@ export default function Register({ passwordRules }: Props) {
                                     tabIndex={3}
                                     autoComplete="new-password"
                                     name="password"
-${P}placeholder="At least 8 characters"
+                                    placeholder="At least 8 characters"
                                     passwordrules={passwordRules}
                                 />
                                 <InputError message={errors.password} />
@@ -82,7 +82,7 @@ ${P}placeholder="At least 8 characters"
                                     tabIndex={4}
                                     autoComplete="new-password"
                                     name="password_confirmation"
-${P}placeholder="Same password again"
+                                    placeholder="Same password again"
                                     passwordrules={passwordRules}
                                 />
                                 <InputError
