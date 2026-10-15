@@ -63,6 +63,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                 <PasswordInput
                                     id="password"
                                     name="password"
+${P}placeholder="Your password"
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
