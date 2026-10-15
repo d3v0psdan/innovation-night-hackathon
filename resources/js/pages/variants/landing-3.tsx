@@ -4,15 +4,18 @@ import {
     Bank,
     ChartBar,
     CreditCard,
+    Eye,
     FileText,
+    Flag,
     Lightning,
     MapTrifold,
     Timer,
+    UserCircle,
     UsersThree,
     type Icon,
 } from '@phosphor-icons/react';
 import type { KeyboardEvent } from 'react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AppearanceToggleTab from '@/components/appearance-tabs';
 import { BrandLogo } from '@/components/brand-logo';
 import { cn } from '@/lib/utils';
@@ -97,6 +100,63 @@ const STAGE_KEY_DIRECTIONS: Record<string, number | undefined> = {
     ArrowLeft: -1,
 };
 
+type FlagKey = 'team' | 'traction' | 'market' | 'fundability';
+
+type ProfileRow = {
+    key: FlagKey;
+    label: string;
+    value: string;
+    gap: string;
+    question: string;
+};
+
+// Sample venture shown on both faces of the card. Pure markup, so it never goes stale.
+const VENTURE = {
+    name: 'Northwind Robotics',
+    stage: 'Pre-seed, 4 people',
+    pitch: 'Inspection robots for pipelines that today get walked by hand.',
+};
+
+const PROFILE_ROWS: ProfileRow[] = [
+    {
+        key: 'team',
+        label: 'Team',
+        value: '2 co-founders, both business side',
+        gap: 'No technical co-founder.',
+        question: 'Who builds the robots while the CEO is in a sales meeting?',
+    },
+    {
+        key: 'traction',
+        label: 'Traction',
+        value: '$8.4K MRR from 2 pilots',
+        gap: 'Only 3 months of revenue.',
+        question: 'What keeps the first customers past month 12?',
+    },
+    {
+        key: 'market',
+        label: 'Market',
+        value: '$4.2B total market',
+        gap: 'TAM unsourced.',
+        question: 'Where does $4.2B come from, and how many buyers pay first?',
+    },
+    {
+        key: 'fundability',
+        label: 'Fundability',
+        value: 'Pitch deck not uploaded',
+        gap: 'No deck.',
+        question: 'Can you send the deck and memo today?',
+    },
+];
+
+const SAMPLE_SCORE = 72;
+const FLIP_DURATION_MS = 600;
+const COUNT_DURATION_MS = 900;
+// Starts the count when the card is edge-on, so the number is visible while it climbs.
+const COUNT_DELAY_MS = FLIP_DURATION_MS / 2;
+const GAP_DETAIL_ID = 'investor-gap-detail';
+const TOGGLE_BUTTON_CLASS =
+    'inline-flex h-8 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors duration-100 ease-fast';
+
 const PROOF = [
     { icon: CreditCard, text: 'No credit card required' },
     { icon: FileText, text: 'Only a deck or company doc needed' },
@@ -168,9 +228,8 @@ const BACKERS = [
 const LOGO_IMAGE_CLASS =
     'max-h-10 w-auto max-w-[8rem] opacity-80 grayscale transition-opacity duration-100 hover:opacity-100 dark:invert';
 
-const BOARD_PERSPECTIVE_CLASS = 'lg:perspective-[1400px]';
-const BOARD_PLANE_CLASS =
-    'lg:transform-3d lg:rotate-x-[50deg] lg:-rotate-y-[14deg]';
+const BOARD_PERSPECTIVE_CLASS = 'lg:perspective-[2000px]';
+const BOARD_PLANE_CLASS = 'lg:origin-top lg:transform-3d lg:rotate-x-[16deg]';
 
 /** Horizontal centre of a tool tile on the board, as a percentage of the board width. */
 function toolCentrePercent(toolIndex: number): number {
@@ -181,6 +240,9 @@ export default function Landing3() {
     const { auth } = usePage().props;
     const cta = auth.user ? dashboard() : register();
     const [activeStageIndex, setActiveStageIndex] = useState(0);
+    const [isInvestorView, setIsInvestorView] = useState(false);
+    const [openFlag, setOpenFlag] = useState<FlagKey | null>(null);
+    const score = useCountUp(SAMPLE_SCORE, isInvestorView);
     const stageButtonRefs = useRef<(HTMLButtonElement | null)[]>([]);
     const activeStage = JOURNEY_STAGES[activeStageIndex];
     const stops = TOOLS.flatMap((tool, toolIndex) =>
@@ -220,49 +282,144 @@ export default function Landing3() {
                             aria-label="Main"
                             className="flex items-center gap-5 text-[15px] font-medium"
                         >
+                            <a
+                                href="#how-it-works"
+                                className="hidden transition-colors duration-100 hover:text-muted-foreground sm:inline"
+                            >
+                                How it works
+                            </a>
+                            <a
+                                href="#investors"
+                                className="hidden transition-colors duration-100 hover:text-muted-foreground sm:inline"
+                            >
+                                For investors
+                            </a>
                             <AppearanceToggleTab compact />
                             {auth.user ? (
                                 <Link
                                     href={dashboard()}
-                                    className="btn-outline h-8"
+                                    className="btn-ink h-8"
                                 >
                                     Dashboard
                                 </Link>
                             ) : (
-                                <Link
-                                    href={login()}
-                                    className="transition-colors duration-100 hover:text-muted-foreground"
-                                >
-                                    Sign in
-                                </Link>
+                                <>
+                                    <Link
+                                        href={login()}
+                                        className="hidden transition-colors duration-100 hover:text-muted-foreground sm:inline"
+                                    >
+                                        Sign in
+                                    </Link>
+                                    <Link
+                                        href={register()}
+                                        className="btn-ink h-8"
+                                    >
+                                        Score my startup free
+                                    </Link>
+                                </>
                             )}
                         </nav>
                     </header>
 
                     <main>
-                        <section className="px-6 pt-16 pb-12 sm:pt-24 lg:pt-30">
-                            <h1 className="max-w-4xl enter text-4xl leading-none font-medium tracking-[-0.05em] text-balance enter-1 sm:text-5xl lg:text-6xl">
-                                See your startup the way investors do.
-                            </h1>
-                            <p className="mt-6 max-w-[34rem] enter text-lg text-muted-foreground enter-2">
-                                Founder, pick where you are. Get the score a VC
-                                analyst would give you, see the gaps they would
-                                flag, and fix them before you pitch. First score
-                                in under 2 minutes.
-                            </p>
-                            <div className="mt-8 enter enter-3">
-                                <Link href={cta} className="btn-ink h-10">
-                                    Score my startup free
-                                    <ArrowRight
-                                        weight="bold"
-                                        className="size-4"
-                                    />
-                                </Link>
+                        <section className="grid lg:grid-cols-2 lg:divide-x lg:divide-rule">
+                            <div className="flex flex-col justify-center px-6 py-16 lg:py-24 lg:pr-12">
+                                <h1 className="max-w-4xl enter text-4xl leading-none font-medium tracking-[-0.05em] text-balance enter-1 sm:text-5xl lg:text-6xl">
+                                    See your startup the way investors do.
+                                </h1>
+                                <p className="mt-6 max-w-[34rem] enter text-lg text-muted-foreground enter-2">
+                                    Founder, pick where you are. Get the score a
+                                    VC analyst would give you, see the gaps they
+                                    would flag, and fix them before you pitch.
+                                    First score in under 2 minutes.
+                                </p>
+                                <div className="mt-8 flex enter flex-wrap gap-4 enter-3">
+                                    <Link href={cta} className="btn-ink h-10">
+                                        Score my startup free
+                                        <ArrowRight
+                                            weight="bold"
+                                            className="size-4"
+                                        />
+                                    </Link>
+                                    <a
+                                        href="#sample-score"
+                                        className="btn-outline h-10"
+                                    >
+                                        What investors see
+                                    </a>
+                                </div>
+                                <p className="mt-4 text-sm text-muted-foreground">
+                                    No credit card. Only a deck or company doc
+                                    needed.
+                                </p>
                             </div>
-                            <p className="mt-4 text-sm text-muted-foreground">
-                                No credit card. Only a deck or company doc
-                                needed.
-                            </p>
+
+                            <div
+                                id="sample-score"
+                                className="flex flex-col gap-6 bg-dot-grid px-6 pt-10 pb-16 lg:px-12 lg:py-24"
+                            >
+                                <div
+                                    role="group"
+                                    aria-label="Choose a view"
+                                    className="inline-flex w-fit gap-1 rounded-lg bg-subtle p-1"
+                                >
+                                    <button
+                                        type="button"
+                                        aria-pressed={!isInvestorView}
+                                        onClick={() => setIsInvestorView(false)}
+                                        className={cn(
+                                            TOGGLE_BUTTON_CLASS,
+                                            !isInvestorView
+                                                ? 'bg-background text-foreground shadow-card'
+                                                : 'text-muted-foreground hover:text-foreground',
+                                        )}
+                                    >
+                                        <UserCircle
+                                            weight="bold"
+                                            className="size-4"
+                                        />
+                                        What you see
+                                    </button>
+                                    <button
+                                        type="button"
+                                        aria-pressed={isInvestorView}
+                                        onClick={() => setIsInvestorView(true)}
+                                        className={cn(
+                                            TOGGLE_BUTTON_CLASS,
+                                            isInvestorView
+                                                ? 'bg-background text-foreground shadow-card'
+                                                : 'text-muted-foreground hover:text-foreground',
+                                        )}
+                                    >
+                                        <Eye weight="bold" className="size-4" />
+                                        What investors see
+                                    </button>
+                                </div>
+
+                                <div className="perspective-[1200px]">
+                                    <div
+                                        className={cn(
+                                            'grid transition-transform duration-600 ease-entrance transform-3d motion-reduce:transition-none',
+                                            isInvestorView && 'rotate-y-180',
+                                        )}
+                                    >
+                                        <VentureFace
+                                            isInvestorView={false}
+                                            isHidden={isInvestorView}
+                                            score={score}
+                                            openFlag={openFlag}
+                                            onOpenFlag={setOpenFlag}
+                                        />
+                                        <VentureFace
+                                            isInvestorView
+                                            isHidden={!isInvestorView}
+                                            score={score}
+                                            openFlag={openFlag}
+                                            onOpenFlag={setOpenFlag}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         </section>
 
                         <section className="border-t border-rule px-6 py-12">
@@ -663,4 +820,190 @@ export default function Landing3() {
             </div>
         </>
     );
+}
+
+type VentureFaceProps = {
+    isInvestorView: boolean;
+    isHidden: boolean;
+    score: number;
+    openFlag: FlagKey | null;
+    onOpenFlag: (flag: FlagKey | null) => void;
+};
+
+/** One face of the flip card. Both faces share one grid cell; the hidden face is inert, so it leaves the tab order and the accessibility tree. */
+function VentureFace({
+    isInvestorView,
+    isHidden,
+    score,
+    openFlag,
+    onOpenFlag,
+}: VentureFaceProps) {
+    const faceLabel = isInvestorView ? 'What investors see' : 'What you see';
+
+    return (
+        <section
+            aria-label={`${VENTURE.name}, ${faceLabel}`}
+            inert={isHidden}
+            className={cn(
+                'col-start-1 row-start-1 flex flex-col rounded-lg border border-border bg-background backface-hidden',
+                isInvestorView && 'rotate-y-180',
+            )}
+        >
+            <div className="flex items-center justify-between gap-4 border-b border-rule px-5 py-3 font-mono text-xs text-muted-foreground">
+                <span className="flex items-center gap-2 text-foreground">
+                    <BrandLogo mark className="size-4" />
+                    {VENTURE.name}
+                </span>
+                <span>{faceLabel}</span>
+            </div>
+
+            <div className="flex flex-1 flex-col gap-6 p-5 sm:p-6">
+                <div className="flex items-start justify-between gap-4">
+                    <div>
+                        <p className="text-sm text-muted-foreground">
+                            {VENTURE.stage}
+                        </p>
+                        <p className="mt-2 text-lg font-medium text-balance">
+                            {VENTURE.pitch}
+                        </p>
+                    </div>
+                    {isInvestorView && (
+                        <p className="shrink-0 text-right">
+                            <span className="score text-6xl sm:text-7xl">
+                                {score}
+                            </span>
+                            <span className="block font-mono text-xs text-muted-foreground">
+                                of 100
+                            </span>
+                        </p>
+                    )}
+                </div>
+
+                <dl className="divide-y divide-rule border-y border-rule">
+                    {PROFILE_ROWS.map((row) => (
+                        <div key={row.key} className="relative py-4 pr-10">
+                            <dt className="text-sm text-muted-foreground">
+                                {row.label}
+                            </dt>
+                            <dd className="mt-1 font-medium">{row.value}</dd>
+                            {isInvestorView && (
+                                <FlagMarker
+                                    flag={row}
+                                    isOpen={openFlag === row.key}
+                                    onOpen={onOpenFlag}
+                                />
+                            )}
+                        </div>
+                    ))}
+                </dl>
+
+                {isInvestorView && (
+                    <div
+                        id={GAP_DETAIL_ID}
+                        aria-live="polite"
+                        className="mt-auto min-h-24 text-sm"
+                    >
+                        <GapDetail
+                            row={PROFILE_ROWS.find(
+                                (row) => row.key === openFlag,
+                            )}
+                        />
+                    </div>
+                )}
+            </div>
+
+            {!isInvestorView && (
+                <div className="flex items-center justify-between border-t border-rule px-5 py-4 text-sm sm:px-6">
+                    <span className="text-muted-foreground">Next up</span>
+                    <span className="flex items-center gap-2 font-medium">
+                        Investment memo
+                        <ArrowRight
+                            weight="bold"
+                            className="size-4 text-brand"
+                        />
+                    </span>
+                </div>
+            )}
+        </section>
+    );
+}
+
+type FlagMarkerProps = {
+    flag: ProfileRow;
+    isOpen: boolean;
+    onOpen: (flag: FlagKey | null) => void;
+};
+
+/** Hover or focus shows the gap, a click or tap pins it, Escape or leaving closes it. */
+function FlagMarker({ flag, isOpen, onOpen }: FlagMarkerProps) {
+    return (
+        <button
+            type="button"
+            aria-expanded={isOpen}
+            aria-controls={GAP_DETAIL_ID}
+            aria-label={`${flag.label} flag: ${flag.gap}`}
+            onMouseEnter={() => onOpen(flag.key)}
+            onMouseLeave={() => onOpen(null)}
+            onFocus={() => onOpen(flag.key)}
+            onBlur={() => onOpen(null)}
+            onClick={() => onOpen(flag.key)}
+            onKeyDown={(event) => {
+                if (event.key === 'Escape') {
+                    onOpen(null);
+                }
+            }}
+            className="absolute top-3 right-0 flex size-7 items-center justify-center rounded-md bg-brand text-brand-foreground transition-colors duration-100 hover:bg-brand-hover"
+        >
+            <Flag weight="bold" className="size-4" />
+        </button>
+    );
+}
+
+function GapDetail({ row }: { row: ProfileRow | undefined }) {
+    if (!row) {
+        return (
+            <p className="text-muted-foreground">
+                Hover or tap a flag to see the gap an investor will name and the
+                question they will ask next.
+            </p>
+        );
+    }
+
+    return (
+        <>
+            <p className="font-medium text-brand">{row.gap}</p>
+            <p className="mt-1 text-muted-foreground">
+                An investor asks: {row.question}
+            </p>
+        </>
+    );
+}
+
+/** Counts from 0 to the target once each time isActive turns on, ease-out. Jumps to the target under reduced motion. */
+function useCountUp(target: number, isActive: boolean): number {
+    const [value, setValue] = useState(0);
+
+    useEffect(() => {
+        if (!isActive) {
+            return;
+        }
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            setValue(target);
+            return;
+        }
+        const start = performance.now() + COUNT_DELAY_MS;
+        let frame = requestAnimationFrame(function tick(now) {
+            const progress = Math.min(
+                1,
+                Math.max(0, (now - start) / COUNT_DURATION_MS),
+            );
+            setValue(Math.round(target * (1 - (1 - progress) ** 3)));
+            if (progress < 1) {
+                frame = requestAnimationFrame(tick);
+            }
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [target, isActive]);
+
+    return value;
 }
