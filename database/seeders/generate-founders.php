@@ -3,13 +3,15 @@
 // One-off generator for database/seeders/founders.json. Run: php.bat database/seeders/generate-founders.php
 require __DIR__.'/../../vendor/autoload.php';
 $app = require __DIR__.'/../../bootstrap/app.php';
-$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+$app->make(Kernel::class)->bootstrap();
 
 use App\Models\User;
 use App\Onboarding\OnboardingRouter;
+use Faker\Factory;
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Carbon;
 
-$faker = Faker\Factory::create();
+$faker = Factory::create();
 $faker->seed(2026);
 $questions = require app_path('Onboarding/questions.php');
 $options = fn (string $key) => array_keys(collect($questions)->firstWhere('key', $key)['options']);
@@ -35,6 +37,7 @@ for ($i = 1; $i <= 500; $i++) {
     // 15% registered but never answered the three questions
     if ($faker->boolean(15)) {
         $rows[] = $row;
+
         continue;
     }
 

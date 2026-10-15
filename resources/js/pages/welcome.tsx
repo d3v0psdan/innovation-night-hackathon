@@ -35,24 +35,52 @@ const STEPS = [
         number: '3',
         label: 'Close the gaps',
         title: 'Work the gaps, tool by tool',
-        text: 'We send you to the one tool that closes the first gap. Then the next.',
+        text: 'We send you to the one tool that closes the first gap: the memo, the investor directory, the journey map or a North Star Sprint. Then the next.',
     },
 ];
 
 const OUTCOMES = [
     {
         title: 'A score',
-        text: 'One number out of 100 that moves as your venture does. Re-score whenever you make progress.',
+        text: 'One number out of 100 that moves as your venture does. Six months from raising or walking into a meeting tomorrow, it reflects your current state, not a stale snapshot.',
     },
     {
         title: 'Gaps, named',
-        text: 'Team, traction, market, fundability. The red flags investors spot first, before you walk in.',
+        text: 'The 11 red flags VCs look for, in team, traction, market and fundability. You see them before you walk into the room.',
     },
     {
         title: 'An investment memo',
-        text: 'The one page investors ask for, written the way an analyst writes it, in about 15 minutes.',
+        text: 'The memo and tearsheet investors ask for, written the way a fund analyst writes them, ready in 10 to 15 minutes. Includes the follow-up questions they will ask.',
     },
 ];
+
+// Real customers and backers from scaleupmap.com. Files in public/brand/logos.
+const CUSTOMERS = [
+    { name: 'Nanostics Precision Health', file: 'nanostics.png' },
+    { name: 'University of Alberta', file: 'university-of-alberta.png' },
+    { name: 'niaHealth', file: 'niahealth.png' },
+    { name: 'UA Innovation Fund', file: 'ua-innovation-fund.png' },
+    { name: 'FireSafe', file: 'firesafe.png' },
+    { name: '2S Water', file: '2s-water.png' },
+    { name: 'HonestDoor', file: 'honestdoor.png' },
+    { name: 'ScaleGood Fund', file: 'scalegood-fund.png' },
+    { name: 'Alberta Innovates', file: 'alberta-innovates.svg' },
+    { name: 'NAIT', file: 'nait.png' },
+    { name: 'Platform Calgary', file: 'platform-calgary.png' },
+];
+
+const BACKERS = [
+    { name: 'Alberta Innovates', file: 'alberta-innovates.svg' },
+    { name: 'Edmonton Unlimited', file: 'edmonton-unlimited.png' },
+    {
+        name: 'Microsoft for Startups Founders Hub',
+        file: 'microsoft-for-startups.png',
+    },
+    { name: 'Google for Startups', file: 'google-for-startups.png' },
+];
+
+const LOGO_IMAGE_CLASS =
+    'max-h-10 w-auto max-w-[8rem] opacity-80 grayscale transition-opacity duration-100 hover:opacity-100 dark:invert';
 
 // Sample venture for the rendered product frame. Pure markup, so it never goes stale.
 const GAP_SCORES = [
@@ -174,6 +202,27 @@ export default function Welcome() {
                             ))}
                         </ul>
 
+                        <ul
+                            aria-label="Founders at these companies scored first"
+                            className="grid grid-cols-2 border-b border-rule sm:grid-cols-3 lg:grid-cols-6"
+                        >
+                            <li className="flex items-center border-r border-b border-rule p-6 text-sm font-medium lg:border-b-0">
+                                Founders at these companies scored first
+                            </li>
+                            {CUSTOMERS.map((logo, index) => (
+                                <li
+                                    key={logo.name}
+                                    className={`flex h-24 items-center justify-center border-rule p-6 ${index < 5 ? 'border-b' : 'lg:border-b-0'} ${index % 2 === 0 ? 'border-r' : 'sm:border-r'} ${index % 6 === 4 ? 'lg:border-r-0' : 'lg:border-r'}`}
+                                >
+                                    <img
+                                        src={`/brand/logos/${logo.file}`}
+                                        alt={logo.name}
+                                        className={LOGO_IMAGE_CLASS}
+                                    />
+                                </li>
+                            ))}
+                        </ul>
+
                         <section className="px-6 py-20">
                             <h2 className="max-w-3xl text-3xl leading-tight font-medium tracking-[-0.02em] text-balance lg:text-[2.5rem]">
                                 90% of startups fail. Most find out why in the
@@ -183,6 +232,11 @@ export default function Welcome() {
                                 Investors spot the gaps in team, traction,
                                 market and fundability in the first ten minutes.
                                 ScaleupMap shows you the same gaps first.
+                            </p>
+                            <p className="mt-4 max-w-[42rem] text-lg text-muted-foreground">
+                                It was built inside ScaleGood Fund as their real
+                                due diligence tool, not a startup checklist. You
+                                get the lens investors use, before you pitch.
                             </p>
                         </section>
 
@@ -272,9 +326,34 @@ export default function Welcome() {
                                 >
                                     See the investor side
                                 </a>
+                                {' or '}
+                                <a
+                                    href="https://scaleupmap.com/#innovation-programs"
+                                    className="font-medium text-brand underline-offset-4 transition-colors duration-100 hover:text-brand-hover hover:underline"
+                                >
+                                    the program side
+                                </a>
+                                .
                             </p>
                         </section>
                     </main>
+
+                    <div className="flex flex-col gap-4 border-t border-rule px-6 py-6 sm:flex-row sm:items-center sm:gap-8">
+                        <p className="text-sm text-muted-foreground">
+                            Supported by
+                        </p>
+                        <ul className="flex flex-wrap items-center gap-8">
+                            {BACKERS.map((logo) => (
+                                <li key={logo.name}>
+                                    <img
+                                        src={`/brand/logos/${logo.file}`}
+                                        alt={logo.name}
+                                        className={LOGO_IMAGE_CLASS}
+                                    />
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
                     <footer className="flex flex-col gap-6 border-t border-rule px-6 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex flex-col gap-3">
@@ -291,6 +370,30 @@ export default function Welcome() {
                             aria-label="Footer"
                             className="flex flex-wrap items-center gap-6"
                         >
+                            <a
+                                href="https://scaleupmap.com/billing"
+                                className="transition-colors duration-100 hover:text-foreground"
+                            >
+                                Pricing
+                            </a>
+                            <a
+                                href="https://join.slack.com/t/scaleupmapcom-xau9343/shared_invite/zt-4akgv5h2b-l9K51CXAsoye1WigWMG7MA"
+                                className="transition-colors duration-100 hover:text-foreground"
+                            >
+                                Community
+                            </a>
+                            <a
+                                href="https://scaleupmap.com/one-pager"
+                                className="transition-colors duration-100 hover:text-foreground"
+                            >
+                                One-pager
+                            </a>
+                            <a
+                                href="https://scaleupmap.com/contact"
+                                className="transition-colors duration-100 hover:text-foreground"
+                            >
+                                Contact
+                            </a>
                             <a
                                 href="https://scaleupmap.com/tos"
                                 className="transition-colors duration-100 hover:text-foreground"

@@ -84,6 +84,7 @@ Close the funnel. Same promise on landing, sign-up, and step 1. The brand kit is
 - [ ] Auth layout (`resources/js/layouts/auth/*`, `resources/js/components/app-logo-icon.tsx`): swap the Laravel mark for `<BrandLogo mark className="size-10" />`
 
 - [ ] `resources/js/pages/auth/register.tsx`: title "Get your score. Takes 2 minutes." Subline "Step 1 of 4. Three questions follow." Keep the form fields as they are
+- [ ] Legal line under the register button, as on the live site: "By creating an account, you agree to our Terms of Service and Privacy Policy." Links to scaleupmap.com/tos and /privacy
 - [ ] Check `resources/js/layouts/auth/*` so the register page shows logo only, no marketing nav, no links except "Already have an account? Sign in"
 - [ ] `resources/js/pages/onboarding/step.tsx`: progress reads "Step 2 of 4" through "Step 4 of 4" when the founder just registered (sign-up counts as step 1). Simplest way: show "Step {n+1} of 4" in the step page. Update `tests/Feature/OnboardingTest.php` and `tests/Browser/OnboardingTest.php` strings
 - [ ] Run `php.bat artisan test --compact --testsuite=Feature`
@@ -151,3 +152,9 @@ Rewrite `PITCH.md` for both challenges. Under 3 minutes. Open with before and af
 ## 6. Dry run
 
 No Claude session. `php.bat artisan migrate:fresh --seed`, `composer run dev`, walk the PITCH.md script once with a timer. Fix nothing bigger than copy.
+
+---
+
+## Done outside the plan
+
+- [x] **Filler data for load and edge-case testing.** `database/seeders/founders.json` holds 500 fake founders, every field the `users` table has for onboarding: answers, onboarded, tutorial done, completed, re-engaged, plus timestamps. Mix: 73 registered without answers, 215 onboarded and stalled (110 already emailed), 100 part way through their tools, 112 finished every recommended tool. `tutorial_done` only ever lists tools the router actually recommends for that founder, so Mark done rules hold. Emails are `founder{1..500}@filler.test`, password `password`. Regenerate with `php.bat database/seeders/generate-founders.php` (fixed seed, same output every run). Not wired into `migrate:fresh --seed`, load it on demand so the demo stays small
