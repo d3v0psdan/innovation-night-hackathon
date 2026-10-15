@@ -25,7 +25,7 @@ it('rejects an answer that is not an option and saves nothing', function () {
         ->from(route('onboarding.show', 1))
         ->post(route('onboarding.store', 1), ['answer' => 'hacked'])
         ->assertRedirect(route('onboarding.show', 1))
-        ->assertSessionHasErrors(['answer' => 'The selected answer is invalid.']);
+        ->assertSessionHasErrors(['answer' => 'Pick one of the options shown.']);
 
     expect($user->fresh()->onboarding)->toBeNull()
         ->and($user->fresh()->onboarded_at)->toBeNull();

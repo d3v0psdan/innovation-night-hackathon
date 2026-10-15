@@ -20,12 +20,12 @@ return [
         'label' => 'What do you need help with this month?',
         'multiple' => true,
         'options' => [
-            'validate_direction' => 'I am unsure about direction',
+            'validate_direction' => 'Unsure about direction',
             'win_customers' => 'Traction and customers',
             'raise_funding' => 'Raising feels overwhelming',
             'find_funding' => 'Finding investors and funding',
             'investor_blind_spots' => 'Blind spots investors will see',
-            'execution_focus' => 'I need weekly focus',
+            'execution_focus' => 'Need weekly focus',
         ],
     ],
     [

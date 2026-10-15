@@ -42,9 +42,16 @@ class OnboardingController extends Controller
         $question = $questions[$step - 1];
         $option = Rule::in(array_keys($question['options']));
 
+        $messages = [
+            'answer.required' => ($question['multiple'] ?? false) ? 'Pick at least one option to continue.' : 'Pick one option to continue.',
+            'answer.in' => 'Pick one of the options shown.',
+            'answer.*.in' => 'Pick only from the options shown.',
+            'answer.*.distinct' => 'Each option can only be picked once.',
+        ];
+
         $validated = ($question['multiple'] ?? false)
-            ? $request->validate(['answer' => ['required', 'array', 'min:1'], 'answer.*' => ['string', 'distinct', $option]])
-            : $request->validate(['answer' => ['required', 'string', $option]]);
+            ? $request->validate(['answer' => ['required', 'array', 'min:1'], 'answer.*' => ['string', 'distinct', $option]], $messages)
+            : $request->validate(['answer' => ['required', 'string', $option]], $messages);
 
         $user = $request->user();
         $user->onboarding = [...($user->onboarding ?? []), $question['key'] => $validated['answer']];

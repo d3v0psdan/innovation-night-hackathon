@@ -26,7 +26,9 @@ type Props = {
 };
 
 const card =
-    'flex cursor-pointer items-center gap-3 rounded-2xl border border-sm-meta px-4 py-3 text-base text-sm-body has-data-checked:border-sm-primary has-data-checked:bg-sm-primary/5 has-data-[state=checked]:border-sm-primary has-data-[state=checked]:bg-sm-primary/5 has-focus-visible:ring-2 has-focus-visible:ring-sm-primary';
+    'flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl border border-sm-meta px-4 py-3 text-base text-sm-body has-data-checked:border-sm-primary has-data-checked:bg-sm-primary/5 has-data-[state=checked]:border-sm-primary has-data-[state=checked]:bg-sm-primary/5 has-focus-visible:ring-2 has-focus-visible:ring-sm-primary';
+const quietLink =
+    'inline-flex min-h-11 items-center gap-1 rounded-full px-2 text-sm-meta focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none';
 
 // Inertia reuses this page component between steps, so the form is keyed by step or it keeps the previous answer.
 export default function Step(props: Props) {
@@ -38,6 +40,9 @@ function StepForm({ step, total, question, answer }: Props) {
     const picked = Array.isArray(form.data.answer)
         ? form.data.answer
         : [form.data.answer].filter(Boolean);
+    const describedBy = form.errors.answer
+        ? 'answer-error continue-hint'
+        : 'continue-hint';
     const submit = (e: FormEvent) => {
         e.preventDefault();
         form.post(store.url(step));
@@ -49,37 +54,49 @@ function StepForm({ step, total, question, answer }: Props) {
         );
 
     return (
-        <main className="min-h-screen bg-sm-canvas px-4 py-10 font-sm-body">
+        <main className="min-h-screen bg-sm-canvas px-4 py-6 font-sm-body sm:py-10">
             <Head title={question.label} />
             <form
                 onSubmit={submit}
-                className="mx-auto max-w-xl rounded-2xl border border-sm-meta bg-sm-card p-8 shadow-sm"
+                className="mx-auto max-w-xl rounded-2xl border border-sm-meta bg-sm-card p-5 shadow-sm sm:p-8"
             >
-                {step > 1 && (
-                    <Link
-                        href={show(step - 1)}
-                        className="inline-flex items-center gap-1 text-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
-                    >
-                        <ArrowLeft weight="bold" aria-hidden="true" /> Back
+                <div className="flex items-center justify-between">
+                    {step > 1 ? (
+                        <Link
+                            href={show(step - 1)}
+                            className="inline-flex min-h-11 items-center gap-1 rounded-full text-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
+                        >
+                            <ArrowLeft weight="bold" aria-hidden="true" /> Back
+                        </Link>
+                    ) : (
+                        <span />
+                    )}
+                    <Link href={logout()} as="button" className={quietLink}>
+                        <SignOut weight="bold" aria-hidden="true" /> Sign out
                     </Link>
-                )}
+                </div>
                 <p className="mt-4 text-xs tracking-widest text-sm-primary uppercase">
                     Step {step} of {total}
                 </p>
                 <div
                     role="progressbar"
                     aria-label="Onboarding progress"
-                    aria-valuemin={0}
+                    aria-valuemin={1}
                     aria-valuemax={total}
-                    aria-valuenow={step - 1}
+                    aria-valuenow={step}
+                    aria-valuetext={'Step ' + step + ' of ' + total}
                     className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-sm-primary/12"
                 >
                     <div
                         className="h-full rounded-full bg-sm-primary"
-                        style={{ width: ((step - 1) / total) * 100 + '%' }}
+                        style={{ width: (step / total) * 100 + '%' }}
                     />
                 </div>
-                <fieldset className="mt-4">
+                <fieldset
+                    aria-describedby={describedBy}
+                    aria-invalid={form.errors.answer ? true : undefined}
+                    className="mt-4"
+                >
                     <legend>
                         <h1 className="font-sm-display text-3xl text-sm-title">
                             {question.label}
@@ -87,8 +104,8 @@ function StepForm({ step, total, question, answer }: Props) {
                     </legend>
                     {step === 1 && (
                         <p className="mt-2 text-sm-meta">
-                            {total} quick questions so we can pick your first
-                            tool.
+                            {total} quick questions so we can point you to the
+                            ScaleupMap tool to start with.
                         </p>
                     )}
                     {question.multiple && (
@@ -107,7 +124,7 @@ function StepForm({ step, total, question, answer }: Props) {
                                             onCheckedChange={(checked) =>
                                                 toggle(value, checked === true)
                                             }
-                                            className="border-sm-primary"
+                                            className="border-sm-primary data-[state=checked]:border-sm-primary data-[state=checked]:bg-sm-primary"
                                         />
                                         {label}
                                     </Label>
@@ -137,7 +154,11 @@ function StepForm({ step, total, question, answer }: Props) {
                     )}
                 </fieldset>
                 {form.errors.answer && (
-                    <p role="alert" className="mt-3 text-sm text-destructive">
+                    <p
+                        id="answer-error"
+                        role="alert"
+                        className="mt-3 text-sm text-destructive"
+                    >
                         {form.errors.answer}
                     </p>
                 )}
@@ -148,32 +169,23 @@ function StepForm({ step, total, question, answer }: Props) {
                             : 'Pick one to continue.'
                         : 'You can change this later.'}
                 </p>
-                <div className="mt-3 flex flex-wrap items-center gap-4">
-                    <button
-                        type="submit"
-                        aria-describedby="continue-hint"
-                        disabled={form.processing}
-                        className="inline-flex items-center gap-2 rounded-full bg-sm-primary px-6 py-3 text-white hover:bg-sm-primary-hover focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60"
-                    >
-                        {form.processing ? 'Saving' : 'Continue'}
-                        {form.processing ? (
-                            <CircleNotch
-                                weight="bold"
-                                aria-hidden="true"
-                                className="animate-spin"
-                            />
-                        ) : (
-                            <ArrowRight weight="bold" aria-hidden="true" />
-                        )}
-                    </button>
-                    <Link
-                        href={logout()}
-                        as="button"
-                        className="ml-auto inline-flex items-center gap-1 py-3 text-sm-meta focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
-                    >
-                        <SignOut weight="bold" aria-hidden="true" /> Sign out
-                    </Link>
-                </div>
+                <button
+                    type="submit"
+                    aria-describedby={describedBy}
+                    disabled={form.processing}
+                    className="mt-3 inline-flex min-h-12 items-center gap-2 rounded-full bg-sm-primary px-6 py-3 text-white hover:bg-sm-primary-hover focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60"
+                >
+                    {form.processing ? 'Saving' : 'Continue'}
+                    {form.processing ? (
+                        <CircleNotch
+                            weight="bold"
+                            aria-hidden="true"
+                            className="animate-spin"
+                        />
+                    ) : (
+                        <ArrowRight weight="bold" aria-hidden="true" />
+                    )}
+                </button>
             </form>
         </main>
     );

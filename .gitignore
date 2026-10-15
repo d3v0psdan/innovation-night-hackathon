@@ -50,3 +50,4 @@ yarn-error.log
 !/AGENTS.md
 !/.mcp.json
 .playwright-mcp/
+tests/Browser/Screenshots/

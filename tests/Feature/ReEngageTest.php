@@ -35,7 +35,7 @@ it('names the next tool and quotes the answer in the email', function () {
     $html = (new ReEngageFounder($stalled))->render();
 
     expect($html)->toContain('North Star Sprint')
-        ->toContain('Because you said "I need weekly focus".')
+        ->toContain('Because you said "Need weekly focus".')
         ->toContain(route('destination.sprint'));
 });
 

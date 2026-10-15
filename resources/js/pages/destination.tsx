@@ -28,6 +28,13 @@ const icons = {
 };
 type IconName = keyof typeof icons;
 
+type Item = {
+    title: string;
+    icon: IconName;
+    url: string;
+    done: boolean;
+    current: boolean;
+};
 type Props = {
     route: string;
     title: string;
@@ -38,14 +45,11 @@ type Props = {
     href: string;
     done: boolean;
     allDone: boolean;
-    checklist: {
-        title: string;
-        icon: IconName;
-        url: string;
-        done: boolean;
-        current: boolean;
-    }[];
+    checklist: Item[];
 };
+
+const quietLink =
+    'inline-flex min-h-11 items-center gap-1 rounded-full px-2 text-sm-meta focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none';
 
 export default function Destination(props: Props) {
     return <DestinationPage key={props.route} {...props} />;
@@ -66,22 +70,31 @@ function DestinationPage({
     const Icon = icons[icon] ?? Compass;
     const form = useForm({});
     const position = checklist.findIndex((item) => item.current) + 1;
+    const next = checklist.find((item) => !item.done && !item.current);
+    const eyebrow = allDone
+        ? 'All set'
+        : position > 0
+          ? 'Your tool ' + position + ' of ' + checklist.length
+          : 'Your first tool';
     const submitDone = (e: FormEvent) => {
         e.preventDefault();
         form.post(markDone.url(route));
     };
+    const status = (item: Item) =>
+        item.done ? 'done' : item.current ? 'current tool' : 'next';
 
     return (
-        <main className="min-h-screen bg-sm-canvas px-4 py-10 font-sm-body">
+        <main className="min-h-screen bg-sm-canvas px-4 py-6 font-sm-body sm:py-10">
             <Head title={title} />
-            <div className="mx-auto max-w-xl rounded-2xl border border-sm-meta bg-sm-card p-8 shadow-sm">
-                <p className="text-xs tracking-widest text-sm-primary uppercase">
-                    {allDone
-                        ? 'All set'
-                        : position > 0
-                          ? `Your tool ${position} of ${checklist.length}`
-                          : 'Your first tool'}
-                </p>
+            <div className="mx-auto max-w-xl rounded-2xl border border-sm-meta bg-sm-card p-5 shadow-sm sm:p-8">
+                <div className="flex items-center justify-between">
+                    <p className="text-xs tracking-widest text-sm-primary uppercase">
+                        {eyebrow}
+                    </p>
+                    <Link href={logout()} as="button" className={quietLink}>
+                        <SignOut weight="bold" aria-hidden="true" /> Sign out
+                    </Link>
+                </div>
                 <h1 className="mt-2 flex items-center gap-2 font-sm-display text-3xl text-sm-title">
                     <Icon weight="bold" aria-hidden="true" /> {title}
                 </h1>
@@ -104,17 +117,24 @@ function DestinationPage({
                         href={href}
                         target="_blank"
                         rel="noopener"
-                        className="inline-flex items-center gap-2 rounded-full bg-sm-primary px-6 py-3 text-white hover:bg-sm-primary-hover focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:ring-offset-2 focus-visible:outline-none"
+                        className="inline-flex min-h-12 items-center gap-2 rounded-full bg-sm-primary px-6 py-3 text-white hover:bg-sm-primary-hover focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:ring-offset-2 focus-visible:outline-none"
                     >
                         Open {title}{' '}
                         <ArrowSquareOut weight="bold" aria-hidden="true" />
+                        <span className="sr-only">(opens in a new tab)</span>
                     </a>
                     {route !== 'dashboard' && !done && (
-                        <form onSubmit={submitDone}>
+                        <form
+                            onSubmit={submitDone}
+                            aria-label="Tutorial progress"
+                        >
+                            <span className="sr-only">
+                                Mark this tool as done.
+                            </span>
                             <button
                                 type="submit"
                                 disabled={form.processing}
-                                className="inline-flex items-center gap-2 rounded-full border border-sm-primary px-5 py-3 text-sm-primary hover:bg-sm-primary/5 focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60"
+                                className="inline-flex min-h-12 items-center gap-2 rounded-full border border-sm-primary px-5 py-3 text-sm-primary hover:bg-sm-primary/5 focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60"
                             >
                                 {form.processing ? (
                                     <CircleNotch
@@ -128,18 +148,16 @@ function DestinationPage({
                                         aria-hidden="true"
                                     />
                                 )}
-                                Mark done
+                                {next ? 'Done, show next tool' : 'Done, finish'}
                             </button>
                         </form>
                     )}
-                    <Link
-                        href={logout()}
-                        as="button"
-                        className="ml-auto inline-flex items-center gap-1 py-3 text-sm-meta focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
-                    >
-                        <SignOut weight="bold" aria-hidden="true" /> Sign out
-                    </Link>
                 </div>
+                {next && !done && route !== 'dashboard' && (
+                    <p className="mt-2 text-sm text-sm-meta">
+                        Next: {next.title}
+                    </p>
+                )}
                 {checklist.length > 0 && (
                     <section
                         aria-labelledby="your-tools"
@@ -164,8 +182,11 @@ function DestinationPage({
                                                     ? 'page'
                                                     : undefined
                                             }
+                                            aria-label={
+                                                item.title + ', ' + status(item)
+                                            }
                                             className={
-                                                'flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm-body hover:border-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none ' +
+                                                'flex min-h-12 items-center gap-3 rounded-2xl border px-4 py-3 text-sm-body hover:border-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none ' +
                                                 (item.current
                                                     ? 'border-sm-primary bg-sm-primary/5'
                                                     : 'border-sm-meta')
@@ -185,8 +206,13 @@ function DestinationPage({
                                                 aria-hidden="true"
                                                 className="text-sm-primary"
                                             />
-                                            {item.title}
-                                            <span className="ml-auto text-sm text-sm-body">
+                                            <span aria-hidden="true">
+                                                {item.title}
+                                            </span>
+                                            <span
+                                                aria-hidden="true"
+                                                className="ml-auto text-sm text-sm-body"
+                                            >
                                                 {item.done
                                                     ? 'Done'
                                                     : item.current
@@ -203,7 +229,7 @@ function DestinationPage({
                 <p className="mt-6">
                     <Link
                         href={show(1)}
-                        className="inline-flex items-center gap-2 py-2 text-sm text-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
+                        className="inline-flex min-h-11 items-center gap-2 rounded-full px-2 py-2.5 text-sm text-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
                     >
                         <ArrowCounterClockwise
                             weight="bold"

@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ScaleupMap pitch: wireframe deck draft</title>
+<style>
+  /* Wireframe only: greys, one font, no theme. Boxes with dashed borders are placeholders. */
+  * { box-sizing: border-box; margin: 0; }
+  body { font: 15px/1.4 system-ui, sans-serif; color: #222; background: #e9e9e9; padding: 40px 0; }
+  .deck-intro { width: 1200px; margin: 0 auto 32px; color: #555; }
+  .deck-intro h1 { font-size: 22px; color: #222; margin-bottom: 6px; }
+  .slide-wrap { width: 1200px; margin: 0 auto 48px; }
+  .meta { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-bottom: 6px; }
+  .meta a { color: #666; }
+  .slide { position: relative; width: 1200px; height: 675px; background: #fff; border: 1px solid #bbb; padding: 56px 64px; display: flex; flex-direction: column; gap: 24px; overflow: hidden; }
+  .notes { background: #f7f7f7; border: 1px solid #ccc; border-top: 0; padding: 10px 14px; font-size: 13px; color: #444; }
+  .notes b { color: #222; }
+  .num { position: absolute; right: 24px; bottom: 16px; font-size: 12px; color: #999; }
+  .foot { position: absolute; left: 64px; bottom: 16px; font-size: 12px; color: #999; }
+
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #777; }
+  .title { font-size: 40px; line-height: 1.1; font-weight: 700; max-width: 900px; }
+  .title.xl { font-size: 64px; }
+  .sub { font-size: 18px; color: #555; max-width: 720px; }
+  .small { font-size: 13px; color: #666; }
+  .quote { font-size: 20px; font-style: italic; }
+
+  .box { border: 2px dashed #aaa; background: #f3f3f3; display: flex; align-items: center; justify-content: center; text-align: center; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; padding: 12px; }
+  .card { border: 1.5px solid #bbb; border-radius: 8px; padding: 16px; background: #fff; }
+  .card h3 { font-size: 16px; margin-bottom: 6px; }
+  .tile { border: 1.5px solid #bbb; border-radius: 8px; padding: 18px; }
+  .tile .big { font-size: 44px; font-weight: 700; line-height: 1; }
+  .pill { display: inline-block; border: 1.5px solid #999; border-radius: 99px; padding: 3px 10px; font-size: 12px; }
+  .pill.dark { background: #333; color: #fff; border-color: #333; }
+  .marker { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; background: #333; color: #fff; font-size: 12px; align-items: center; justify-content: center; flex: none; }
+  .x { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #333; font-size: 12px; font-weight: 700; align-items: center; justify-content: center; flex: none; }
+
+  .row { display: flex; gap: 24px; }
+  .col { display: flex; flex-direction: column; gap: 16px; }
+  .grow { flex: 1; }
+  .center { align-items: center; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1.5px solid #bbb; border-radius: 8px; overflow: hidden; }
+  .split > div { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+  .split > div + div { border-left: 1.5px solid #bbb; }
+
+  .flow { display: flex; align-items: stretch; gap: 0; }
+  .flow .step { flex: 1; border: 1.5px solid #bbb; border-radius: 8px; padding: 12px; font-size: 13px; display: flex; flex-direction: column; gap: 6px; }
+  .flow .arrow { width: 28px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 18px; }
+  .flow .step.break { border: 2px solid #333; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { border-bottom: 1px solid #ccc; padding: 6px 8px; text-align: left; vertical-align: top; }
+  th { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #777; }
+  code { font: 12px ui-monospace, monospace; background: #eee; padding: 1px 4px; border-radius: 3px; }
+  ul.clean { padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .deck-intro, .notes, .meta { display: none; }
+    .slide-wrap { margin: 0; page-break-after: always; }
+    @page { size: 1200px 675px; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck-intro">
+  <h1>ScaleupMap pitch: wireframe deck, draft 1</h1>
+  <p>Layout and content only. Dashed boxes are placeholders for screenshots or visuals. Grey notes under each slide are speaker notes plus the Mobbin layout reference. Print to PDF hides the notes.</p>
+</div>
+
+<!-- 1. Title -->
+<section class="slide-wrap">
+  <div class="meta"><span>01 Title</span><a href="https://mobbin.com/screens/15f511b6-e7f6-480e-a644-6abd8a3d8ed7">ref: WRITER, headline left, content right</a></div>
+  <div class="slide">
+    <div class="row grow center" style="gap:48px">
+      <div class="col" style="flex:1.1">
+        <span class="eyebrow">Innovation Night, ScaleupMap challenges 1 and 2</span>
+        <div class="title xl">Every founder knows their next step.</div>
+        <div class="sub">A landing page that says who it is for, and an onboarding that sends each founder to the right tool.</div>
+        <div class="small">Team name &middot; names &middot; 14 October 2026</div>
+      </div>
+      <div class="box" style="flex:1; height:420px">Hero visual: new landing page in a browser frame</div>
+    </div>
+    <span class="num">1</span>
+  </div>
+  <div class="notes"><b>Say:</b> one sentence on who we are, then straight into the problem. <b>Time:</b> 10s.</div>
+</section>
+
+<!-- 2. Problem -->
+<section class="slide-wrap">
+  <div class="meta"><span>02 The problem</span><a href="https://mobbin.com/screens/15f511b6-e7f6-480e-a644-6abd8a3d8ed7">ref: WRITER, statement left, 2x2 tiles right</a></div>
+  <div class="slide">
+    <div class="row grow center" style="gap:56px">
+      <div class="col" style="flex:1">
+        <span class="eyebrow">The problem today</span>
+        <div class="title">A first-time founder can't tell what ScaleupMap is, or where to start.</div>
+        <div class="sub">The page is cluttered, the story is split, and the screenshots go stale every release.</div>
+      </div>
+      <div class="grid2" style="flex:1">
+        <div class="tile"><div class="big">22</div><div class="small">sections on the landing page</div></div>
+        <div class="tile"><div class="big">37</div><div class="small">things to click before you scroll far</div></div>
+        <div class="tile"><div class="big">6+</div><div class="small">screens between "Score My Startup Free" and any score</div></div>
+        <div class="tile"><div class="big">2&times;</div><div class="small">asked "who are you": landing tab, then /welcome</div></div>
+      </div>
+    </div>
+    <span class="num">2</span>
+  </div>
+  <div class="notes"><b>Say:</b> numbers come from our walk of the live site at 1440px and 390px (docs/Current-ScaleupMap_Landing_Page_Teardown.md). <b>Time:</b> 15s.</div>
+</section>
+
+<!-- 3. What is broken: landing -->
+<section class="slide-wrap">
+  <div class="meta"><span>03 What's broken: the landing page</span><a href="https://mobbin.com/screens/ed82aafc-c4dc-442d-87fc-359f7347f940">ref: Semrush review, annotated original</a></div>
+  <div class="slide">
+    <div><span class="eyebrow">What's broken, 1 of 2</span><div class="title">The first five seconds don't answer "is this for me?"</div></div>
+    <div class="row grow">
+      <div class="box" style="flex:1.4; position:relative">Screenshot: live landing hero at 1440px, numbered callouts 1 to 4 placed on it</div>
+      <div class="col" style="flex:1; justify-content:center">
+        <div class="row" style="gap:12px"><span class="marker">1</span><div><b>"My Dashboard" in the nav</b><div class="small">shown to a logged-out stranger</div></div></div>
+        <div class="row" style="gap:12px"><span class="marker">2</span><div><b>Three audience tabs first</b><div class="small">pick a role before you know the product</div></div></div>
+        <div class="row" style="gap:12px"><span class="marker">3</span><div><b>Headline is a trademark question</b><div class="small">"Do you know your ScaleupMap Score&trade;?"</div></div></div>
+        <div class="row" style="gap:12px"><span class="marker">4</span><div><b>Best proof is 14px grey</b><div class="small">four strong facts nobody reads</div></div></div>
+      </div>
+    </div>
+    <span class="num">3</span>
+  </div>
+  <div class="notes"><b>Say:</b> cover the paragraph, read only the headline: you learn "my startup has a score", not what it does for you. <b>Time:</b> 20s.</div>
+</section>
+
+<!-- 4. What is broken: handoff -->
+<section class="slide-wrap">
+  <div class="meta"><span>04 What's broken: landing to onboarding</span><a href="https://mobbin.com/screens/83831167-3ae3-44be-bee9-e88790e06e29">ref: Jira workflow, horizontal status chain</a></div>
+  <div class="slide">
+    <div><span class="eyebrow">What's broken, 2 of 2</span><div class="title">Six screens, three different stories.</div></div>
+    <div class="flow grow">
+      <div class="step"><span class="small">Landing</span><b>"Score My Startup Free"</b><div class="box grow">thumb</div></div>
+      <div class="arrow">&rarr;</div>
+      <div class="step break"><span class="small">/signup</span><b>"Create Account"</b><div class="box grow">thumb</div><span class="x">!</span></div>
+      <div class="arrow">&rarr;</div>
+      <div class="step break"><span class="small">Verify email</span><b>Inbox round-trip</b><div class="box grow">thumb</div><span class="x">!</span></div>
+      <div class="arrow">&rarr;</div>
+      <div class="step break"><span class="small">/welcome</span><b>Role asked again</b><div class="box grow">thumb</div><span class="x">!</span></div>
+      <div class="arrow">&rarr;</div>
+      <div class="step break"><span class="small">/onboarding</span><b>5 questions + a file</b><div class="box grow">thumb</div><span class="x">!</span></div>
+      <div class="arrow">&rarr;</div>
+      <div class="step break"><span class="small">Complete</span><b>"Where to go first?"</b><div class="box grow">thumb</div><span class="x">!</span></div>
+    </div>
+    <div class="grid3">
+      <div class="card"><h3>Promise drops</h3><div class="small">CTA says "score", next screen says "account".</div></div>
+      <div class="card"><h3>Asked twice</h3><div class="small">Founder picked "For Founders" already. /welcome asks again.</div></div>
+      <div class="card"><h3>Ends on a choice</h3><div class="small">After all that, the founder still picks a tool alone.</div></div>
+    </div>
+    <span class="num">4</span>
+  </div>
+  <div class="notes"><b>Say:</b> walk the row left to right, one breath per screen. Land on "ends on a choice": that is where challenge 2 starts. <b>Time:</b> 20s.</div>
+</section>
+
+<!-- 5. Before / after -->
+<section class="slide-wrap">
+  <div class="meta"><span>05 The fix: before and after</span><a href="https://mobbin.com/screens/ed82aafc-c4dc-442d-87fc-359f7347f940">ref: Semrush, Original vs New split</a></div>
+  <div class="slide">
+    <div><span class="eyebrow">Our fix</span><div class="title">Same product. One audience, one promise, one button.</div></div>
+    <div class="split grow">
+      <div><span class="pill">Before</span><div class="box grow">Screenshot: current hero</div><div class="small">5 nav links, 3 tabs, eyebrow, trademark headline, 38-word paragraph</div></div>
+      <div><span class="pill dark">After</span><div class="box grow">Screenshot: new hero</div><div class="small">3 nav links, headline names the founder and the outcome, proof bar under the CTA</div></div>
+    </div>
+    <span class="num">5</span>
+  </div>
+  <div class="notes"><b>Say:</b> pause on this slide, let the judges look. Headline draft: "See your startup the way investors do, in 2 minutes." <b>Time:</b> 15s.</div>
+</section>
+
+<!-- 6. New landing anatomy -->
+<section class="slide-wrap">
+  <div class="meta"><span>06 The new landing page, top to bottom</span><a href="https://mobbin.com/screens/fea7fa9a-ea1c-460a-bc6c-cad59a1ce3b2">ref: Cofounder, staged columns</a></div>
+  <div class="slide">
+    <div class="row grow" style="gap:48px">
+      <div class="col" style="width:300px; gap:8px">
+        <div class="box" style="height:110px">1 Hero + proof bar</div>
+        <div class="box" style="height:60px">2 Problem</div>
+        <div class="box" style="height:80px">3 How it works, 3 steps</div>
+        <div class="box" style="height:80px">4 What you get</div>
+        <div class="box" style="height:50px">5 One founder quote</div>
+        <div class="box" style="height:50px">6 Final CTA</div>
+      </div>
+      <div class="col grow" style="justify-content:center">
+        <span class="eyebrow">22 sections become 6</span>
+        <div class="title">Each section answers one question, in order.</div>
+        <table>
+          <tr><th>Section</th><th>Answers</th></tr>
+          <tr><td>Hero + proof bar</td><td>Who is it for, what do I get, is it real</td></tr>
+          <tr><td>Problem</td><td>Why should I care</td></tr>
+          <tr><td>How it works</td><td>What happens after I click</td></tr>
+          <tr><td>What you get</td><td>Score, gaps, memo. A live widget, not a screenshot, so it can't go stale</td></tr>
+          <tr><td>Quote + CTA</td><td>Someone like me did it. Start now</td></tr>
+        </table>
+        <div class="small">FAQ, media, community and demos move to their own pages or the footer.</div>
+      </div>
+    </div>
+    <span class="num">6</span>
+  </div>
+  <div class="notes"><b>Say:</b> the stale-screenshot problem is solved by drawing the product in code from real data. <b>Decide:</b> live score widget vs illustrated flow. <b>Time:</b> 20s.</div>
+</section>
+
+<!-- 7. One story across three screens -->
+<section class="slide-wrap">
+  <div class="meta"><span>07 One story from landing to step 1</span><a href="https://mobbin.com/screens/f798fc6d-5fbd-41bd-a78e-31acd1d7a293">ref: OKX application, step indicator</a></div>
+  <div class="slide">
+    <div><span class="eyebrow">Cohesive handoff</span><div class="title">The promise follows the founder.</div></div>
+    <div class="row" style="gap:12px; align-items:center">
+      <span class="pill dark">1 Landing</span><span style="width:40px;border-top:1.5px solid #999"></span>
+      <span class="pill dark">2 Sign up</span><span style="width:40px;border-top:1.5px solid #999"></span>
+      <span class="pill">3 Three questions</span><span style="width:40px;border-top:1.5px solid #999"></span>
+      <span class="pill">Your first tool</span>
+    </div>
+    <div class="grid3 grow">
+      <div class="col"><div class="box grow">Landing hero frame</div><div class="small">"See your startup the way investors do, in 2 minutes."</div></div>
+      <div class="col"><div class="box grow">Sign-up card frame, logo only, no nav</div><div class="small">"Get your score. Takes 2 minutes." Step 1 of 3</div></div>
+      <div class="col"><div class="box grow">Onboarding step 1 frame</div><div class="small">Role carried from the CTA, so /welcome is skipped</div></div>
+    </div>
+    <span class="num">7</span>
+  </div>
+  <div class="notes"><b>Say:</b> six screens to value become three. Same words, same type, same card style on all three. <b>Time:</b> 15s.</div>
+</section>
+
+<!-- 8. Challenge 2 system -->
+<section class="slide-wrap">
+  <div class="meta"><span>08 Smarter onboarding: the system</span><a href="https://mobbin.com/screens/34856cb4-4cb0-4248-ab60-d1d4bf64b665">ref: Brilliant path, "start here" node</a></div>
+  <div class="slide">
+    <div><span class="eyebrow">Challenge 2</span><div class="title">Three answers in. The right tool out. Tracked after.</div></div>
+    <div class="flow" style="margin-top:12px">
+      <div class="step"><span class="marker">1</span><b>Ask</b><span class="small">Stage, goals (pick several), team size. ScaleupMap's real answer keys</span></div>
+      <div class="arrow">&rarr;</div>
+      <div class="step"><span class="marker">2</span><b>Store</b><span class="small">Saved on the founder's profile as JSON</span></div>
+      <div class="arrow">&rarr;</div>
+      <div class="step"><span class="marker">3</span><b>Decide</b><span class="small">Ordered rule table ranks the tools</span></div>
+      <div class="arrow">&rarr;</div>
+      <div class="step break"><span class="marker">4</span><b>Send</b><span class="small">Lands on tool 1 with the reason on screen</span></div>
+      <div class="arrow">&rarr;</div>
+      <div class="step"><span class="marker">5</span><b>Track</b><span class="small">Mark done moves to the next tool. Stalled founders get one email</span></div>
+    </div>
+    <div class="box grow">Optional: strip of 5 small screenshots, one under each step</div>
+    <span class="num">8</span>
+  </div>
+  <div class="notes"><b>Say:</b> this maps 1:1 to the brief: collect, store, decide, send, track. <b>Time:</b> 15s.</div>
+</section>
+
+<!-- 9. Decision logic -->
+<section class="slide-wrap">
+  <div class="meta"><span>09 The decision logic</span><a href="https://mobbin.com/screens/087e19fd-ca99-4e8f-8fd8-5766a90bf27f">ref: Hootsuite compare, plain data table</a></div>
+  <div class="slide">
+    <div class="row grow" style="gap:48px">
+      <div class="col" style="flex:1; justify-content:center">
+        <span class="eyebrow">Rules, not a black box</span>
+        <div class="title">First match lands. Every match queues.</div>
+        <ul class="clean sub">
+          <li>Stage rules run first: no idea yet or pivoting means the Journey map, whatever the goals</li>
+          <li>Each goal adds its tool to the list, no duplicates</li>
+          <li>No match: the dashboard, said honestly</li>
+          <li>Every rule has a test</li>
+        </ul>
+        <div class="small">Source: <code>app/Onboarding/OnboardingRouter.php</code></div>
+      </div>
+      <div class="card" style="flex:1.1; align-self:center">
+        <table>
+          <tr><th>#</th><th>If the founder said</th><th>Send to</th></tr>
+          <tr><td>1</td><td>Looking for an idea</td><td>Journey map</td></tr>
+          <tr><td>2</td><td>Pivoting</td><td>Journey map</td></tr>
+          <tr><td>3</td><td>Raising feels overwhelming</td><td>Investment memo</td></tr>
+          <tr><td>4</td><td>Finding investors and funding</td><td>Investor directory</td></tr>
+          <tr><td>5</td><td>Blind spots investors will see</td><td>ScaleupMap Score</td></tr>
+          <tr><td>6</td><td>Unsure about direction</td><td>Journey map</td></tr>
+          <tr><td>7</td><td>Need weekly focus</td><td>North Star Sprint</td></tr>
+          <tr><td>8</td><td>Traction and customers</td><td>North Star Sprint</td></tr>
+          <tr><td>&ndash;</td><td>Nothing matched</td><td>Dashboard</td></tr>
+        </table>
+      </div>
+    </div>
+    <span class="num">9</span>
+  </div>
+  <div class="notes"><b>Say:</b> a judge can read this table in ten seconds and predict where any founder lands. That is the point. <b>Time:</b> 20s.</div>
+</section>
+
+<!-- 10. Two users, two results -->
+<section class="slide-wrap">
+  <div class="meta"><span>10 Two founders, two results</span><a href="https://mobbin.com/screens/b66a072d-bc5b-4c51-b5a8-f5c7f88b3e18">ref: Apple "which is right for you", two columns</a></div>
+  <div class="slide">
+    <div><span class="eyebrow">Same survey</span><div class="title">Two founders. Two different first screens.</div></div>
+    <div class="grid2 grow">
+      <div class="card col">
+        <div class="row center" style="gap:12px"><div class="box" style="width:44px;height:44px;border-radius:50%;padding:0">pic</div><div><b>Maya</b><div class="small">Raising a first round &middot; 2 to 5 people</div></div></div>
+        <div class="small">Picked: "Raising feels overwhelming", "Finding investors and funding"</div>
+        <div class="box grow">Screenshot: Investment memo landing</div>
+        <div><b>Lands on Investment memo</b><div class="small">Next up: Investor directory</div></div>
+        <div class="quote">Because you said "Raising feels overwhelming".</div>
+      </div>
+      <div class="card col">
+        <div class="row center" style="gap:12px"><div class="box" style="width:44px;height:44px;border-radius:50%;padding:0">pic</div><div><b>Sam</b><div class="small">Building an MVP &middot; Just me</div></div></div>
+        <div class="small">Picked: "Unsure about direction"</div>
+        <div class="box grow">Screenshot: Journey map landing</div>
+        <div><b>Lands on Journey map</b><div class="small">One tool, nothing queued</div></div>
+        <div class="quote">Because you said "Unsure about direction".</div>
+      </div>
+    </div>
+    <span class="num">10</span>
+  </div>
+  <div class="notes"><b>Say:</b> the reason quotes the founder's own words, never a paraphrase. Demo logins: maya@demo.test and sam@demo.test. <b>Time:</b> 20s.</div>
+</section>
+
+<!-- 11. Track + engage -->
+<section class="slide-wrap">
+  <div class="meta"><span>11 Did it work? Keep them going</span><a href="https://mobbin.com/screens/090173cd-511e-4466-ae39-2b0f98c60f5d">ref: Zillow, checklist with complete states</a></div>
+  <div class="slide">
+    <div><span class="eyebrow">Track and re-engage (bonus)</span><div class="title">We know who started, who finished, and who stalled.</div></div>
+    <div class="row grow">
+      <div class="col" style="flex:1">
+        <div class="card col" style="gap:10px">
+          <b>Tutorial checklist</b>
+          <div class="row center" style="gap:10px"><span class="marker">&#10003;</span><span>Investment memo</span><span class="pill" style="margin-left:auto">Done</span></div>
+          <div class="row center" style="gap:10px"><span class="x">2</span><span>Investor directory</span><span class="pill dark" style="margin-left:auto">Now</span></div>
+          <div class="row center" style="gap:10px"><span class="x">3</span><span>ScaleupMap Score</span><span class="pill" style="margin-left:auto">Next</span></div>
+        </div>
+        <div class="small">"Mark done" moves the founder to the next tool. The dashboard always opens the first undone one.</div>
+      </div>
+      <div class="col" style="flex:1">
+        <div class="box grow">Screenshot: re-engage email preview</div>
+        <div class="small">Daily job: finished the survey, never opened a tool, not emailed yet. One email, names the next tool, quotes their answer.</div>
+      </div>
+    </div>
+    <span class="num">11</span>
+  </div>
+  <div class="notes"><b>Say:</b> landing, tutorial and email read from the same ranked list, so they never disagree. <b>Show:</b> <code>php artisan onboarding:re-engage</code> output if time allows. <b>Time:</b> 20s.</div>
+</section>
+
+<!-- 12. Live demo -->
+<section class="slide-wrap">
+  <div class="meta"><span>12 Live demo</span><a href="https://mobbin.com/screens/34856cb4-4cb0-4248-ab60-d1d4bf64b665">ref: Brilliant, numbered path</a></div>
+  <div class="slide">
+    <div class="row grow center" style="gap:48px">
+      <div class="col" style="flex:1">
+        <span class="eyebrow">Live</span>
+        <div class="title xl">Let's watch a new founder.</div>
+        <div class="small">Backup: screenshots in <code>pitch/</code>, in order</div>
+      </div>
+      <div class="col" style="flex:1; gap:12px">
+        <div class="row center" style="gap:12px"><span class="marker">1</span>Landing hero, click the CTA</div>
+        <div class="row center" style="gap:12px"><span class="marker">2</span>Sign up as fresh@demo.test</div>
+        <div class="row center" style="gap:12px"><span class="marker">3</span>Answer 3 questions</div>
+        <div class="row center" style="gap:12px"><span class="marker">4</span>Land on the memo with the reason</div>
+        <div class="row center" style="gap:12px"><span class="marker">5</span>Mark done, next tool opens</div>
+        <div class="row center" style="gap:12px"><span class="marker">6</span>Log in as Sam, different landing</div>
+      </div>
+    </div>
+    <span class="num">12</span>
+  </div>
+  <div class="notes"><b>Path:</b> full click-path lives in PITCH.md. Step 1 needs the rebuilt landing page; until it exists, start the demo at /login. <b>Time:</b> 60s.</div>
+</section>
+
+<!-- 13. Why it works better -->
+<section class="slide-wrap">
+  <div class="meta"><span>13 Why ours works better</span><a href="https://mobbin.com/screens/15f511b6-e7f6-480e-a644-6abd8a3d8ed7">ref: WRITER, three cards</a></div>
+  <div class="slide">
+    <div><span class="eyebrow">Why it works</span><div class="title">Less to read. Nothing asked twice. No dead ends.</div></div>
+    <div class="grid3 grow">
+      <div class="card col"><div class="box" style="height:60px">icon</div><h3>Clear in 5 seconds</h3><div class="small">Headline names the founder and the outcome. One audience per page.</div><div class="tile"><span class="big">22 &rarr; 6</span><div class="small">sections</div></div></div>
+      <div class="card col"><div class="box" style="height:60px">icon</div><h3>One story</h3><div class="small">Same promise on landing, sign-up and step 1. Role carried through.</div><div class="tile"><span class="big">6 &rarr; 3</span><div class="small">screens to value</div></div></div>
+      <div class="card col"><div class="box" style="height:60px">icon</div><h3>No guessing where to start</h3><div class="small">The answers pick the tool and say why. Progress and stalls are tracked.</div><div class="tile"><span class="big">0</span><div class="small">"where to go first?" screens</div></div></div>
+    </div>
+    <span class="num">13</span>
+  </div>
+  <div class="notes"><b>Say:</b> tie each card back to a finding from slides 3 and 4. <b>Time:</b> 15s.</div>
+</section>
+
+<!-- 14. Next + close -->
+<section class="slide-wrap">
+  <div class="meta"><span>14 What's next, questions</span><a href="https://mobbin.com/screens/15f511b6-e7f6-480e-a644-6abd8a3d8ed7">ref: WRITER, statement left, list right</a></div>
+  <div class="slide">
+    <div class="row grow center" style="gap:56px">
+      <div class="col" style="flex:1">
+        <span class="eyebrow">With more time</span>
+        <div class="title xl">Thank you. Questions?</div>
+        <div class="small">Repo &middot; live URL &middot; team contacts</div>
+      </div>
+      <div class="col" style="flex:1">
+        <div class="card"><h3>Stage changes the copy</h3><div class="small">Journey stage rewrites the tutorial text, not just the order.</div></div>
+        <div class="card"><h3>Real routes behind each tool</h3><div class="small">Swap our stubs for ScaleupMap's live pages.</div></div>
+        <div class="card"><h3>Measure the funnel</h3><div class="small">Landing to first tool opened, per answer, to tune the rules.</div></div>
+      </div>
+    </div>
+    <span class="num">14</span>
+  </div>
+  <div class="notes"><b>Say:</b> two of these come from PITCH.md "What's next"; the funnel one is new, cut it if short on time. <b>Time:</b> 10s.</div>
+</section>
+
+</body>
+</html>
