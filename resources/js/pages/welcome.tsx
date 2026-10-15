@@ -363,10 +363,6 @@ export default function Welcome() {
                                         What investors see
                                     </a>
                                 </div>
-                                <p className="mt-4 text-sm text-muted-foreground">
-                                    No credit card. Only a deck or company doc
-                                    needed.
-                                </p>
                             </div>
 
                             <div
