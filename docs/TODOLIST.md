@@ -83,12 +83,12 @@ Close the funnel. Same promise on landing, sign-up, and step 1. The brand kit is
 
 - [x] Auth layout (`resources/js/layouts/auth/*`, `resources/js/components/app-logo-icon.tsx`): swap the Laravel mark for `<BrandLogo mark className="size-10" />`
 
-- [ ] `resources/js/pages/auth/register.tsx`: title "Get your score. Takes 2 minutes." Subline "Step 1 of 4. Three questions follow." Keep the form fields as they are
-- [ ] Legal line under the register button, as on the live site: "By creating an account, you agree to our Terms of Service and Privacy Policy." Links to scaleupmap.com/tos and /privacy
-- [ ] Check `resources/js/layouts/auth/*` so the register page shows logo only, no marketing nav, no links except "Already have an account? Sign in"
-- [ ] `resources/js/pages/onboarding/step.tsx`: progress reads "Step 2 of 4" through "Step 4 of 4" when the founder just registered (sign-up counts as step 1). Simplest way: show "Step {n+1} of 4" in the step page. Update `tests/Feature/OnboardingTest.php` and `tests/Browser/OnboardingTest.php` strings
-- [ ] Run `php.bat artisan test --compact --testsuite=Feature`
-- [ ] Commit: `Sign-up restates the landing promise, one step bar from sign-up to the first tool`
+- [x] `resources/js/pages/auth/register.tsx`: title "Get your score. Takes 2 minutes." Subline "Step 1 of 4. Three questions follow." Keep the form fields as they are
+- [x] Legal line under the register button, as on the live site: "By creating an account, you agree to our Terms of Service and Privacy Policy." Links to scaleupmap.com/tos and /privacy
+- [x] Check `resources/js/layouts/auth/*` so the register page shows logo only, no marketing nav, no links except "Already have an account? Sign in"
+- [x] `resources/js/pages/onboarding/step.tsx`: progress reads "Step 2 of 4" through "Step 4 of 4" when the founder just registered (sign-up counts as step 1). Simplest way: show "Step {n+1} of 4" in the step page. Update `tests/Feature/OnboardingTest.php` and `tests/Browser/OnboardingTest.php` strings
+- [x] Run `php.bat artisan test --compact --testsuite=Feature`
+- [x] Commit: `Sign-up restates the landing promise, one step bar from sign-up to the first tool`
 
 **Exit:** Register page says the promise. Step pages show 2 of 4, 3 of 4, 4 of 4. Feature suite green.
 
