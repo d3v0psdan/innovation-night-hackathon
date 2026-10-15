@@ -241,7 +241,7 @@ const FOOTER_LINKS = [
 ];
 
 const LOGO_IMAGE_CLASS =
-    'w-auto opacity-80 grayscale transition-opacity duration-100 hover:opacity-100 dark:invert';
+    'w-auto opacity-70 grayscale transition-[opacity,filter] duration-200 hover:opacity-100 hover:grayscale-0 dark:invert dark:hover:invert-0';
 
 const BOARD_PERSPECTIVE_CLASS = 'lg:perspective-[2000px]';
 const BOARD_PLANE_CLASS = 'lg:origin-top lg:transform-3d lg:rotate-x-[16deg]';
@@ -614,14 +614,14 @@ export default function Welcome() {
                                 </li>
                             ))}
                         </ul>
-                        <div className="flex flex-col border-b border-rule sm:flex-row">
-                            <p className="flex shrink-0 items-center border-b border-rule px-6 py-4 text-sm font-medium sm:w-56 sm:border-r sm:border-b-0 sm:py-0">
+                        <div className="border-b border-rule">
+                            <p className="px-6 pt-10 text-center text-sm font-medium text-muted-foreground">
                                 Founders at these companies scored first
                             </p>
-                            <div className="min-w-0 flex-1 overflow-hidden marquee-mask py-7">
+                            <div className="overflow-hidden marquee-mask py-10">
                                 <ul
                                     aria-label="Customer logos"
-                                    className="marquee items-center gap-16 pr-16"
+                                    className="marquee items-center gap-20 pr-20"
                                 >
                                     {[...CUSTOMERS, ...CUSTOMERS].map(
                                         (logo, index) => (
@@ -630,14 +630,14 @@ export default function Welcome() {
                                                 aria-hidden={
                                                     index >= CUSTOMERS.length
                                                 }
-                                                className="flex h-10 shrink-0 items-center"
+                                                className="flex h-16 shrink-0 items-center"
                                             >
                                                 <img
                                                     src={`/brand/logos/${logo.file}`}
                                                     alt={logo.name}
                                                     className={LOGO_IMAGE_CLASS}
                                                     style={{
-                                                        height: `${2.5 * (logo.scale ?? 1)}rem`,
+                                                        height: `${3.5 * (logo.scale ?? 1)}rem`,
                                                     }}
                                                 />
                                             </li>
