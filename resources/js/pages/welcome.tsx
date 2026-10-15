@@ -55,21 +55,22 @@ const OUTCOMES = [
 ];
 
 // Real customers and backers from scaleupmap.com. Files in public/brand/logos.
-const CUSTOMERS = [
-    { name: 'Nanostics Precision Health', file: 'nanostics.png' },
+// scale lifts PNGs that ship with transparent padding so every mark reads at the same optical size.
+const CUSTOMERS: { name: string; file: string; scale?: number }[] = [
+    { name: 'Nanostics Precision Health', file: 'nanostics.png', scale: 1.8 },
     { name: 'University of Alberta', file: 'university-of-alberta.png' },
-    { name: 'niaHealth', file: 'niahealth.png' },
+    { name: 'niaHealth', file: 'niahealth.png', scale: 1.3 },
     { name: 'UA Innovation Fund', file: 'ua-innovation-fund.png' },
-    { name: 'FireSafe', file: 'firesafe.png' },
-    { name: '2S Water', file: '2s-water.png' },
-    { name: 'HonestDoor', file: 'honestdoor.png' },
-    { name: 'ScaleGood Fund', file: 'scalegood-fund.png' },
+    { name: 'FireSafe', file: 'firesafe.png', scale: 1.4 },
+    { name: '2S Water', file: '2s-water.png', scale: 1.6 },
+    { name: 'HonestDoor', file: 'honestdoor.png', scale: 1.6 },
+    { name: 'ScaleGood Fund', file: 'scalegood-fund.png', scale: 1.4 },
     { name: 'Alberta Innovates', file: 'alberta-innovates.svg' },
-    { name: 'NAIT', file: 'nait.png' },
+    { name: 'NAIT', file: 'nait.png', scale: 1.1 },
     { name: 'Platform Calgary', file: 'platform-calgary.png' },
 ];
 
-const BACKERS = [
+const BACKERS: { name: string; file: string; scale?: number }[] = [
     { name: 'Alberta Innovates', file: 'alberta-innovates.svg' },
     { name: 'Edmonton Unlimited', file: 'edmonton-unlimited.png' },
     {
@@ -80,7 +81,7 @@ const BACKERS = [
 ];
 
 const LOGO_IMAGE_CLASS =
-    'max-h-10 w-auto max-w-[8rem] opacity-80 grayscale transition-opacity duration-100 hover:opacity-100 dark:invert';
+    'w-auto opacity-80 grayscale transition-opacity duration-100 hover:opacity-100 dark:invert';
 
 // Sample venture for the rendered product frame. Pure markup, so it never goes stale.
 const GAP_SCORES = [
@@ -223,6 +224,9 @@ export default function Welcome() {
                                                     src={`/brand/logos/${logo.file}`}
                                                     alt={logo.name}
                                                     className={LOGO_IMAGE_CLASS}
+                                                    style={{
+                                                        height: `${2.5 * (logo.scale ?? 1)}rem`,
+                                                    }}
                                                 />
                                             </li>
                                         ),
@@ -357,6 +361,9 @@ export default function Welcome() {
                                         src={`/brand/logos/${logo.file}`}
                                         alt={logo.name}
                                         className={LOGO_IMAGE_CLASS}
+                                        style={{
+                                            height: `${2.5 * (logo.scale ?? 1)}rem`,
+                                        }}
                                     />
                                 </li>
                             ))}
