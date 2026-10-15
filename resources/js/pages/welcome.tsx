@@ -6,6 +6,7 @@ import {
     FileText,
     Timer,
 } from '@phosphor-icons/react';
+import AppearanceToggleTab from '@/components/appearance-tabs';
 import { dashboard, login, register } from '@/routes';
 
 // Wireframe pass: structure, copy and spacing only. Colour, fonts and motion land in the theme pass.
@@ -88,6 +89,7 @@ export default function Welcome() {
                             <a href="#investors" className="hidden sm:inline">
                                 For investors
                             </a>
+                            <AppearanceToggleTab compact />
                             {auth.user ? (
                                 <Link href={dashboard()}>Dashboard</Link>
                             ) : (
@@ -277,7 +279,11 @@ export default function Welcome() {
                             ScaleupMap Score is a trademark of ScaleupMap.
                             Copyright 2026 ScaleupMap.
                         </p>
-                        <nav aria-label="Footer" className="flex gap-6">
+                        <nav
+                            aria-label="Footer"
+                            className="flex items-center gap-6"
+                        >
+                            <AppearanceToggleTab />
                             <a href="https://scaleupmap.com/tos">Terms</a>
                             <a href="https://scaleupmap.com/privacy">Privacy</a>
                             <a href="https://scaleupmap.com/about">About</a>
