@@ -1,6 +1,3 @@
-import { logout } from '@/routes';
-import { show } from '@/routes/onboarding';
-import { done as markDone } from '@/routes/tutorial';
 import { Head, Link, useForm } from '@inertiajs/react';
 import {
     ArrowCounterClockwise,
@@ -17,6 +14,15 @@ import {
     UsersThree,
 } from '@phosphor-icons/react';
 import { FormEvent } from 'react';
+import {
+    FunnelLayout,
+    FunnelPanel,
+    quietLinkClass,
+} from '@/layouts/funnel-layout';
+import { cn } from '@/lib/utils';
+import { logout } from '@/routes';
+import { show } from '@/routes/onboarding';
+import { done as markDone } from '@/routes/tutorial';
 
 const icons = {
     ChartBar,
@@ -48,9 +54,6 @@ type Props = {
     checklist: Item[];
 };
 
-const quietLink =
-    'inline-flex min-h-11 items-center gap-1 rounded-full px-2 text-sm-meta focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none';
-
 export default function Destination(props: Props) {
     return <DestinationPage key={props.route} {...props} />;
 }
@@ -76,100 +79,113 @@ function DestinationPage({
         : position > 0
           ? 'Your tool ' + position + ' of ' + checklist.length
           : 'Your first tool';
+    const canMarkDone = route !== 'dashboard' && !done;
     const submitDone = (e: FormEvent) => {
         e.preventDefault();
         form.post(markDone.url(route));
     };
     const status = (item: Item) =>
         item.done ? 'done' : item.current ? 'current tool' : 'next';
+    const stateLabel = (item: Item) =>
+        item.done ? 'Done' : item.current ? 'Now' : 'Next';
 
     return (
-        <main className="min-h-screen bg-sm-canvas px-4 py-6 font-sm-body sm:py-10">
-            <Head title={title} />
-            <div className="mx-auto max-w-xl rounded-2xl border border-sm-meta bg-sm-card p-5 shadow-sm sm:p-8">
-                <div className="flex items-center justify-between">
-                    <p className="text-xs tracking-widest text-sm-primary uppercase">
-                        {eyebrow}
+        <FunnelLayout
+            headerAction={
+                <Link href={logout()} as="button" className={quietLinkClass}>
+                    <SignOut weight="bold" aria-hidden="true" /> Sign out
+                </Link>
+            }
+            aside={
+                <>
+                    <Head title={title} />
+                    <p className="strip-label">{eyebrow}</p>
+                    <h1 className="mt-8 flex max-w-xl items-center gap-3 text-4xl leading-none font-medium tracking-[-0.05em] text-balance sm:text-5xl">
+                        <Icon
+                            weight="bold"
+                            aria-hidden="true"
+                            className="size-9 shrink-0 text-brand"
+                        />
+                        {title}
+                    </h1>
+                    <p className="mt-6 max-w-[34rem] text-lg">{because}</p>
+                    <p className="mt-2 max-w-[34rem] text-lg text-muted-foreground">
+                        {blurb}
                     </p>
-                    <Link href={logout()} as="button" className={quietLink}>
-                        <SignOut weight="bold" aria-hidden="true" /> Sign out
-                    </Link>
-                </div>
-                <h1 className="mt-2 flex items-center gap-2 font-sm-display text-3xl text-sm-title">
-                    <Icon weight="bold" aria-hidden="true" /> {title}
-                </h1>
-                <p className="mt-4 text-sm-body">{because}</p>
-                <p className="mt-2 text-sm-meta">{blurb}</p>
-                <section
-                    aria-labelledby="first-action"
-                    className="mt-6 rounded-2xl bg-sm-primary/5 p-4"
-                >
-                    <h2
-                        id="first-action"
-                        className="text-xs tracking-widest text-sm-primary uppercase"
-                    >
+                    <div className="mt-8 flex flex-wrap items-center gap-3">
+                        <a
+                            href={href}
+                            target="_blank"
+                            rel="noopener"
+                            className="btn-ink h-10"
+                        >
+                            Open {title}
+                            <ArrowSquareOut
+                                weight="bold"
+                                aria-hidden="true"
+                                className="size-4"
+                            />
+                            <span className="sr-only">
+                                (opens in a new tab)
+                            </span>
+                        </a>
+                        {canMarkDone && (
+                            <form
+                                onSubmit={submitDone}
+                                aria-label="Tutorial progress"
+                            >
+                                <span className="sr-only">
+                                    Mark this tool as done.
+                                </span>
+                                <button
+                                    type="submit"
+                                    disabled={form.processing}
+                                    className="btn-outline h-10"
+                                >
+                                    {form.processing ? (
+                                        <CircleNotch
+                                            weight="bold"
+                                            aria-hidden="true"
+                                            className="size-4 animate-spin"
+                                        />
+                                    ) : (
+                                        <CheckCircle
+                                            weight="bold"
+                                            aria-hidden="true"
+                                            className="size-4"
+                                        />
+                                    )}
+                                    {next
+                                        ? 'Done, show next tool'
+                                        : 'Done, finish'}
+                                </button>
+                            </form>
+                        )}
+                    </div>
+                    {next && canMarkDone && (
+                        <p className="mt-4 text-sm text-muted-foreground">
+                            Next: {next.title}
+                        </p>
+                    )}
+                </>
+            }
+        >
+            <FunnelPanel>
+                <section aria-labelledby="first-action">
+                    <h2 id="first-action" className="strip-label">
                         Your first action
                     </h2>
-                    <p className="mt-1 text-sm-body">{first_action}</p>
+                    <p className="mt-3 text-base">{first_action}</p>
                 </section>
-                <div className="mt-8 flex flex-wrap items-center gap-4">
-                    <a
-                        href={href}
-                        target="_blank"
-                        rel="noopener"
-                        className="inline-flex min-h-12 items-center gap-2 rounded-full bg-sm-primary px-6 py-3 text-white hover:bg-sm-primary-hover focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:ring-offset-2 focus-visible:outline-none"
-                    >
-                        Open {title}{' '}
-                        <ArrowSquareOut weight="bold" aria-hidden="true" />
-                        <span className="sr-only">(opens in a new tab)</span>
-                    </a>
-                    {route !== 'dashboard' && !done && (
-                        <form
-                            onSubmit={submitDone}
-                            aria-label="Tutorial progress"
-                        >
-                            <span className="sr-only">
-                                Mark this tool as done.
-                            </span>
-                            <button
-                                type="submit"
-                                disabled={form.processing}
-                                className="inline-flex min-h-12 items-center gap-2 rounded-full border border-sm-primary px-5 py-3 text-sm-primary hover:bg-sm-primary/5 focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60"
-                            >
-                                {form.processing ? (
-                                    <CircleNotch
-                                        weight="bold"
-                                        aria-hidden="true"
-                                        className="animate-spin"
-                                    />
-                                ) : (
-                                    <CheckCircle
-                                        weight="bold"
-                                        aria-hidden="true"
-                                    />
-                                )}
-                                {next ? 'Done, show next tool' : 'Done, finish'}
-                            </button>
-                        </form>
-                    )}
-                </div>
-                {next && !done && route !== 'dashboard' && (
-                    <p className="mt-2 text-sm text-sm-meta">
-                        Next: {next.title}
-                    </p>
-                )}
                 {checklist.length > 0 && (
                     <section
                         aria-labelledby="your-tools"
-                        className="mt-8 border-t border-sm-meta/40 pt-6"
+                        className="mt-8 border-t border-rule pt-6"
                     >
-                        <h2
-                            id="your-tools"
-                            className="text-xs tracking-widest text-sm-primary uppercase"
-                        >
+                        <h2 id="your-tools" className="strip-label">
                             Your tools, in order
                         </h2>
-                        <ol className="mt-3 grid gap-2">
+                        <ol className="-mx-6 mt-3 divide-y divide-rule border-y border-rule sm:-mx-8">
                             {checklist.map((item) => {
                                 const ItemIcon = icons[item.icon] ?? Compass;
                                 const State = item.done ? CheckCircle : Circle;
@@ -185,39 +201,34 @@ function DestinationPage({
                                             aria-label={
                                                 item.title + ', ' + status(item)
                                             }
-                                            className={
-                                                'flex min-h-12 items-center gap-3 rounded-2xl border px-4 py-3 text-sm-body hover:border-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none ' +
-                                                (item.current
-                                                    ? 'border-sm-primary bg-sm-primary/5'
-                                                    : 'border-sm-meta')
-                                            }
+                                            className={cn(
+                                                'flex min-h-12 items-center gap-3 px-6 py-3 text-base transition-colors duration-100 hover:bg-subtle sm:px-8',
+                                                item.current && 'bg-subtle',
+                                            )}
                                         >
                                             <State
                                                 weight="bold"
                                                 aria-hidden="true"
-                                                className={
+                                                className={cn(
+                                                    'size-4',
                                                     item.done
-                                                        ? 'text-sm-primary'
-                                                        : 'text-sm-meta'
-                                                }
+                                                        ? 'text-brand'
+                                                        : 'text-muted-foreground',
+                                                )}
                                             />
                                             <ItemIcon
                                                 weight="bold"
                                                 aria-hidden="true"
-                                                className="text-sm-primary"
+                                                className="size-4 text-brand"
                                             />
                                             <span aria-hidden="true">
                                                 {item.title}
                                             </span>
                                             <span
                                                 aria-hidden="true"
-                                                className="ml-auto text-sm text-sm-body"
+                                                className="ml-auto font-mono text-xs text-muted-foreground"
                                             >
-                                                {item.done
-                                                    ? 'Done'
-                                                    : item.current
-                                                      ? 'Now'
-                                                      : 'Next'}
+                                                {stateLabel(item)}
                                             </span>
                                         </Link>
                                     </li>
@@ -229,16 +240,17 @@ function DestinationPage({
                 <p className="mt-6">
                     <Link
                         href={show(1)}
-                        className="inline-flex min-h-11 items-center gap-2 rounded-full px-2 py-2.5 text-sm text-sm-primary focus-visible:ring-2 focus-visible:ring-sm-primary focus-visible:outline-none"
+                        className="inline-flex items-center gap-2 text-sm text-brand transition-colors duration-100 hover:text-brand-hover"
                     >
                         <ArrowCounterClockwise
                             weight="bold"
                             aria-hidden="true"
-                        />{' '}
+                            className="size-4"
+                        />
                         Change my answers
                     </Link>
                 </p>
-            </div>
-        </main>
+            </FunnelPanel>
+        </FunnelLayout>
     );
 }

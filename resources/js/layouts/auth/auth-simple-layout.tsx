@@ -1,40 +1,68 @@
 import { Link } from '@inertiajs/react';
-import { BrandLogo } from '@/components/brand-logo';
-import { home } from '@/routes';
+import {
+    FunnelLayout,
+    FunnelPanel,
+    quietLinkClass,
+} from '@/layouts/funnel-layout';
+import { login, register } from '@/routes';
 import type { AuthLayoutProps } from '@/types';
+
+// Mirrors the "How it works" strip on the landing so sign-up reads as step 1 of the same path.
+const NEXT_STEPS = [
+    { number: '2', label: 'Where you are' },
+    { number: '3', label: 'What you need this month' },
+    { number: '4', label: 'How big the team is' },
+];
 
 export default function AuthSimpleLayout({
     children,
     title,
     description,
+    funnel = false,
 }: AuthLayoutProps) {
-    return (
-        <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
-            <div className="w-full max-w-sm">
-                <div className="flex flex-col gap-8">
-                    <div className="flex flex-col items-center gap-4">
-                        <Link
-                            href={home()}
-                            className="flex flex-col items-center gap-2 font-medium"
-                        >
-                            <div className="mb-1 flex size-10 items-center justify-center rounded-md">
-                                <BrandLogo mark className="size-10" />
-                            </div>
-                            <span className="sr-only">{title}</span>
-                        </Link>
+    const headerAction = funnel ? (
+        <Link href={login()} className={quietLinkClass}>
+            Sign in
+        </Link>
+    ) : (
+        <Link href={register()} className="btn-ink h-8">
+            Score my startup free
+        </Link>
+    );
 
-                        <div className="space-y-2 text-center">
-                            <h1 className="text-2xl font-medium tracking-[-0.02em] text-balance">
-                                {title}
-                            </h1>
-                            <p className="text-center text-sm text-muted-foreground">
-                                {description}
-                            </p>
-                        </div>
-                    </div>
-                    {children}
-                </div>
-            </div>
-        </div>
+    return (
+        <FunnelLayout
+            formFirst
+            headerAction={headerAction}
+            aside={
+                <>
+                    <h1 className="max-w-xl text-4xl leading-none font-medium tracking-[-0.05em] text-balance sm:text-5xl">
+                        {title}
+                    </h1>
+                    <p className="mt-6 max-w-[34rem] text-lg text-muted-foreground">
+                        {description}
+                    </p>
+                    {funnel && (
+                        <ol className="mt-10 max-w-sm divide-y divide-rule border-y border-rule">
+                            {NEXT_STEPS.map((step) => (
+                                <li
+                                    key={step.number}
+                                    className="flex h-12 items-center gap-4"
+                                >
+                                    <span className="strip-number">
+                                        {step.number}
+                                    </span>
+                                    <span className="text-sm">
+                                        {step.label}
+                                    </span>
+                                </li>
+                            ))}
+                        </ol>
+                    )}
+                </>
+            }
+        >
+            <FunnelPanel>{children}</FunnelPanel>
+        </FunnelLayout>
     );
 }

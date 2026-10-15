@@ -18,4 +18,6 @@ export type AuthLayoutProps = {
     name?: string;
     title?: string;
     description?: string;
+    /** Sign-up is step 1 of the funnel: show the three questions that follow. */
+    funnel?: boolean;
 };

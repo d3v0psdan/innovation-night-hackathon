@@ -139,4 +139,5 @@ export default function Register({ passwordRules }: Props) {
 Register.layout = {
     title: 'Get your score. Takes 2 minutes.',
     description: 'Step 1 of 4. Three questions follow.',
+    funnel: true,
 };
