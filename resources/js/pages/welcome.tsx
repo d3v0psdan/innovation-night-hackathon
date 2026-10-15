@@ -54,7 +54,13 @@ const OUTCOMES = [
     },
 ];
 
-const GAPS = ['Team', 'Traction', 'Market'];
+// Sample venture for the rendered product frame. Pure markup, so it never goes stale.
+const GAP_SCORES = [
+    { label: 'Team', points: 9, max: 15 },
+    { label: 'Traction', points: 7, max: 20 },
+    { label: 'Market', points: 11, max: 20 },
+    { label: 'Fundability', points: 14, max: 20 },
+];
 const SAMPLE_SCORE = 72;
 
 export default function Welcome() {
@@ -116,50 +122,40 @@ export default function Welcome() {
                     </header>
 
                     <main>
-                        <section className="flex flex-col items-center px-6 pt-16 pb-12 text-center sm:pt-30 sm:pb-20">
-                            <h1 className="max-w-4xl enter text-4xl leading-none font-medium tracking-[-0.05em] text-balance enter-1 sm:text-5xl lg:text-6xl">
-                                See your startup the way investors do. In 2
-                                minutes.
-                            </h1>
-                            <p className="mt-6 max-w-[40rem] enter text-lg text-muted-foreground enter-2">
-                                Built for first-time founders. Get the score a
-                                VC analyst would give you, see the gaps they
-                                would flag, and fix them before you pitch.
-                            </p>
-                            <Link
-                                href={cta}
-                                className="btn-ink mt-8 h-10 enter enter-3"
-                            >
-                                Score my startup free
-                                <ArrowRight weight="bold" className="size-4" />
-                            </Link>
-
-                            <div className="mt-16 w-full max-w-lg enter rounded-lg border border-rule bg-background p-6 text-left enter-4">
-                                <div className="flex items-baseline justify-between font-mono text-xs text-muted-foreground">
-                                    <span>Northwind Robotics</span>
-                                    <span>Re-scored 2 days ago</span>
+                        <section className="grid lg:grid-cols-2 lg:divide-x lg:divide-rule">
+                            <div className="flex flex-col justify-center px-6 py-16 lg:py-24 lg:pr-12">
+                                <h1 className="enter text-4xl leading-none font-medium tracking-[-0.05em] text-balance enter-1 sm:text-5xl lg:text-6xl">
+                                    See your startup the way investors do.
+                                </h1>
+                                <p className="mt-6 max-w-[34rem] enter text-lg text-muted-foreground enter-2">
+                                    Built for first-time founders. Get the score
+                                    a VC analyst would give you, see the gaps
+                                    they would flag, and fix them before you
+                                    pitch. First score in under 2 minutes.
+                                </p>
+                                <div className="mt-8 flex enter flex-wrap gap-4 enter-3">
+                                    <Link href={cta} className="btn-ink h-10">
+                                        Score my startup free
+                                        <ArrowRight
+                                            weight="bold"
+                                            className="size-4"
+                                        />
+                                    </Link>
+                                    <a
+                                        href="#sample-score"
+                                        className="btn-outline h-10"
+                                    >
+                                        See a sample score
+                                    </a>
                                 </div>
-                                <p className="mt-6 flex items-baseline gap-2">
-                                    <span className="score text-7xl">
-                                        {score}
-                                    </span>
-                                    <span className="text-muted-foreground">
-                                        of 100
-                                    </span>
+                                <p className="mt-6 enter text-sm text-muted-foreground enter-3">
+                                    No credit card. Only a deck or company doc
+                                    needed.
                                 </p>
-                                <p className="mt-6 text-sm text-muted-foreground">
-                                    Gaps to close first
-                                </p>
-                                <ul className="mt-2 flex flex-wrap gap-2">
-                                    {GAPS.map((gap) => (
-                                        <li
-                                            key={gap}
-                                            className="rounded-md bg-navy-3 px-3 py-1 text-sm font-medium text-brand"
-                                        >
-                                            {gap}
-                                        </li>
-                                    ))}
-                                </ul>
+                            </div>
+
+                            <div className="flex flex-col justify-end overflow-hidden bg-dot-grid px-6 pt-10 lg:px-12 lg:pt-16">
+                                <ScoreFrame score={score} />
                             </div>
                         </section>
 
@@ -319,6 +315,67 @@ export default function Welcome() {
                 </div>
             </div>
         </>
+    );
+}
+
+function ScoreFrame({ score }: { score: number }) {
+    return (
+        <div
+            id="sample-score"
+            aria-label="Sample ScaleupMap Score for Northwind Robotics"
+            className="enter rounded-t-xl border border-b-0 border-border bg-background shadow-card enter-4"
+        >
+            <div className="flex items-center justify-between gap-4 border-b border-rule px-5 py-3 font-mono text-xs text-muted-foreground">
+                <span className="flex items-center gap-2 text-foreground">
+                    <BrandLogo mark className="size-4" />
+                    Northwind Robotics
+                </span>
+                <span>Re-scored 2 days ago</span>
+            </div>
+            <div className="grid gap-8 p-5 sm:grid-cols-[auto_1fr] sm:gap-10 sm:p-6">
+                <div>
+                    <p className="text-sm text-muted-foreground">
+                        ScaleupMap Score
+                    </p>
+                    <p className="mt-2 flex items-baseline gap-2">
+                        <span className="score text-7xl sm:text-8xl">
+                            {score}
+                        </span>
+                        <span className="text-muted-foreground">of 100</span>
+                    </p>
+                    <p className="mt-3 text-sm font-medium text-brand">
+                        Up 6 since last month
+                    </p>
+                </div>
+                <ul className="flex flex-col justify-center gap-4">
+                    {GAP_SCORES.map((gap) => (
+                        <li key={gap.label} className="text-sm">
+                            <div className="flex justify-between">
+                                <span className="font-medium">{gap.label}</span>
+                                <span className="font-mono text-xs text-muted-foreground tabular-nums">
+                                    {gap.points} / {gap.max}
+                                </span>
+                            </div>
+                            <div className="mt-1.5 h-1.5 w-full rounded-sm bg-subtle">
+                                <div
+                                    className="h-full rounded-sm bg-brand transition-[width] duration-700 ease-out"
+                                    style={{
+                                        width: `${Math.round((gap.points / gap.max) * 100)}%`,
+                                    }}
+                                />
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            <div className="flex items-center justify-between border-t border-rule px-5 py-4 text-sm sm:px-6">
+                <span className="text-muted-foreground">Next up</span>
+                <span className="flex items-center gap-2 font-medium">
+                    Investment memo
+                    <ArrowRight weight="bold" className="size-4 text-brand" />
+                </span>
+            </div>
+        </div>
     );
 }
 
